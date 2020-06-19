@@ -16,6 +16,12 @@ public class StrangeView extends View {
     float[] accelerations;
     float[] colors;
 
+    // test
+    Cube c;
+    float size;
+    float cX;
+    float cY;
+
     public StrangeView(Context context) {
         super(context);
         colors = new float[3];
@@ -25,9 +31,17 @@ public class StrangeView extends View {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
                 accelerations = sensorEvent.values;
+                float[] changeAngle = new float[3];
                 for (int i = 0; i < accelerations.length; i++) {
                     colors[i] = map(accelerations[i], -10, 10, 0,255);
+                    if (c != null) {
+                        changeAngle[i] = map(accelerations[i], -10, 10, (float) (- Math.PI), (float) (Math.PI));
+                    }
                 }
+                if (c != null) {
+                    c.setAngle(changeAngle[0], changeAngle[1], changeAngle[2]);
+                }
+
                 invalidate();
             }
 
@@ -40,11 +54,22 @@ public class StrangeView extends View {
         brush.setStyle(Paint.Style.FILL);
     }
 
+
     @Override
     protected void onDraw(Canvas canvas) {
-        // draw the thing
+        // draw background
         brush.setColor(Color.rgb((int) colors[0], (int) colors[1], (int) colors[2]));
         canvas.drawRect(0,0,getWidth(),getHeight(),brush);
+        // draw cube
+        if (c == null) {
+            c = new Cube(Math.min(getWidth(), getHeight()) / 3f);
+            c.rotate(1, 1, 1);
+            cX = getWidth() / 2f;
+            cY = getHeight() / 2f;
+        }
+        brush.setColor(Color.argb(100,0,0,0));
+        c.draw(canvas, brush, cX,cY);
+
     }
 
     float map(float v, float vStart, float vEnd, float min, float max) {
