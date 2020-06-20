@@ -119,8 +119,12 @@ public class GameBoardView extends View {
             }
         }
         // draw the piece that is being put
-        if (location != null && board[location.first][location.second] == FiveInARowGame.EMPTY) {
-            drawPiece(canvas,(float) (location.first * tileSize), (float) (location.second * tileSize), game.nextPlayer());
+        try {
+            if (location != null && board[location.first][location.second] == FiveInARowGame.EMPTY) {
+                drawPiece(canvas, (float) (location.first * tileSize), (float) (location.second * tileSize), game.nextPlayer());
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("haha Y?");
         }
     }
 
