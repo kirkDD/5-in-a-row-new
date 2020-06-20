@@ -107,8 +107,6 @@ public class GameBoardView extends View {
         // center it horizontally
         canvas.translate((getWidth() - size) / 2f, 0);
         int[][] board = game.getBoard();
-//        brush.setStyle(Paint.Style.FILL);
-//        brush.setColor(Color.GRAY);
         brush.setStyle(Paint.Style.STROKE);
         brush.setColor(Color.DKGRAY);
         canvas.drawRect(0, 0, size, size, brush);
@@ -117,23 +115,24 @@ public class GameBoardView extends View {
                 float x = i * tileSize;
                 float y = j * tileSize;
                 canvas.drawRect(x, y, x + tileSize, y + tileSize, brush);
-                if (board[i][j] == FiveInARowGame.BLACK) {
-                    BLACK_PNG.setBounds((int) x+1, (int) y+1, (int) (x + tileSize) - 1, (int) (y + tileSize) - 1);
-                    BLACK_PNG.draw(canvas);
-                } else if (board[i][j] == FiveInARowGame.WHITE) {
-                    WHITE_PNG.setBounds((int) x+1, (int) y+1, (int) (x + tileSize) - 1, (int) (y + tileSize) - 1);
-                    WHITE_PNG.draw(canvas);
-                }
-                if (location != null && i == location.first && j == location.second) {
-                    if (game.nextPlayer() == FiveInARowGame.BLACK) {
-                        BLACK_PNG.setBounds((int) x+1, (int) y+1, (int) (x + tileSize) - 1, (int) (y + tileSize) - 1);
-                        BLACK_PNG.draw(canvas);
-                    } else if (game.nextPlayer() == FiveInARowGame.WHITE) {
-                        WHITE_PNG.setBounds((int) x+1, (int) y+1, (int) (x + tileSize) - 1, (int) (y + tileSize) - 1);
-                        WHITE_PNG.draw(canvas);
-                    }
-                }
+                drawPiece(canvas, x, y, board[i][j]);
             }
+        }
+        // draw the piece that is being put
+        if (location != null && board[location.first][location.second] == FiveInARowGame.EMPTY) {
+            drawPiece(canvas,(float) (location.first * tileSize), (float) (location.second * tileSize), game.nextPlayer());
+        }
+    }
+
+    // draw piece at specific location on board
+    // if playerId is neither, draw nothing
+    void drawPiece(Canvas canvas, float x, float y, int playerId) {
+        if (playerId == FiveInARowGame.BLACK) {
+            BLACK_PNG.setBounds((int) x+1, (int) y+1, (int) (x + tileSize) - 1, (int) (y + tileSize) - 1);
+            BLACK_PNG.draw(canvas);
+        } else if (playerId == FiveInARowGame.WHITE) {
+            WHITE_PNG.setBounds((int) x+1, (int) y+1, (int) (x + tileSize) - 1, (int) (y + tileSize) - 1);
+            WHITE_PNG.draw(canvas);
         }
     }
 

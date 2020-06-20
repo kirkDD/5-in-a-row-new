@@ -42,6 +42,7 @@ public class SplashScreenView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP) {
             text.setLevel(10000);
+            blink = true;
             invalidate();
             new Handler().postDelayed(() -> click.onClick(this), 800);
         }
