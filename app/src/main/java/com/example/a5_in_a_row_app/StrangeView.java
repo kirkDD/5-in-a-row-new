@@ -64,7 +64,7 @@ public class StrangeView extends View {
                         currAngles[i] += (targetAngles[i] - currAngles[i]) * 0.1;
                     }
                     c.setAngle(currAngles[0], currAngles[1], currAngles[2]);
-                    invalidate();
+                    this.post(this::invalidate);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

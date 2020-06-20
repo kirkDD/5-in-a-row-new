@@ -18,9 +18,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         playSplashScreen();
-        new Handler().postDelayed(() -> {
-
-        }, 3000);
     }
 
     void playSplashScreen() {
