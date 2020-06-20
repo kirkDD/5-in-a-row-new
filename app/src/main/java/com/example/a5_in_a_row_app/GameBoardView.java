@@ -105,7 +105,7 @@ public class GameBoardView extends View {
         // how to draw a board?
         // game != null
         // center it horizontally
-
+        canvas.translate((getWidth() - size) / 2f, 0);
         int[][] board = game.getBoard();
         brush.setStyle(Paint.Style.FILL);
         brush.setColor(Color.GRAY);

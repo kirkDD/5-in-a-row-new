@@ -49,6 +49,6 @@ public class MainActivity extends AppCompatActivity {
 
     void setUpStangeView() {
         LinearLayout ll = findViewById(R.id.strange_view);
-        ll.addView(new StrangeView(this));
+//        ll.addView(new StrangeView(this));
     }
 }
