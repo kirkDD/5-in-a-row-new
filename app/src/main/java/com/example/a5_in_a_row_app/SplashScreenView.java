@@ -24,6 +24,8 @@ public class SplashScreenView extends View {
 
     Drawable black;
     Drawable white;
+    Drawable smile;
+    boolean canSmile;
     ClipDrawable text;
     private OnClickListener click;
 
@@ -42,6 +44,7 @@ public class SplashScreenView extends View {
 
         black = context.getDrawable(R.drawable.black_piece);
         white = context.getDrawable(R.drawable.white_piece);
+        smile = context.getDrawable(R.drawable.smile);
         r = new Random();
         b = new Paint();
         // get pngs
@@ -57,7 +60,7 @@ public class SplashScreenView extends View {
             nextLevel = 10000;
         }
         ValueAnimator va = ValueAnimator.ofInt(text.getLevel(), nextLevel);
-        va.setDuration(2 * (nextLevel - text.getLevel()) / (r.nextInt(2) + 2));
+        va.setDuration(2 * (nextLevel - text.getLevel()) / (r.nextInt(5) + 2));
         va.addUpdateListener(thing -> {
             text.setLevel((int) thing.getAnimatedValue());
             invalidate();
@@ -73,9 +76,8 @@ public class SplashScreenView extends View {
                 if (nextLevel != 10000) {
                     setNextLevel();
                 } else {
-                    new Handler().postDelayed(() -> {
-                        click.onClick(null);
-                    }, 500);
+                    canSmile = true;
+                    new Handler().postDelayed(() -> click.onClick(null), 800);
                 }
             }
 
@@ -107,6 +109,7 @@ public class SplashScreenView extends View {
         h = h / ratio;
         w = W;
         text.setBounds((int) (-w / 2), (int) (-h / 2), (int) w / 2, (int) h / 2);
+        smile.setBounds((int) (-w / 2), (int) (-h / 1.2), (int) w / 2, (int) (h / 1.2));
         W = getWidth();
         float size = Math.min(W, H) / 4;
         black.setBounds((int) (-size * 1.5), (int) (-size / 2), (int) (-size * 0.5), (int) (size / 2));
@@ -117,7 +120,11 @@ public class SplashScreenView extends View {
     protected void onDraw(Canvas canvas) {
         if (W == 0) initDims();
         canvas.translate(W / 2, H / 1.5f);
-        text.draw(canvas);
+        if (!canSmile) {
+            text.draw(canvas);
+        } else {
+            smile.draw(canvas);
+        }
         canvas.translate(-W / 2, -H / 1.5f);
         // draw the image
         canvas.translate(W / 2, H / 3);
