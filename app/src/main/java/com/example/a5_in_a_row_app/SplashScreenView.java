@@ -130,6 +130,8 @@ public class SplashScreenView extends View {
         white.setBounds((int) (size * 1.5), (int) (-size / 2), (int) (size * 0.5), (int) (size / 2));
     }
 
+    int blinkCounter = 0;
+    boolean blink;
     @Override
     protected void onDraw(Canvas canvas) {
         if (W == 0) initDims();
@@ -143,7 +145,13 @@ public class SplashScreenView extends View {
         // draw the image
         canvas.translate(W / 2, H / 3);
         // blinking?
-        if (r.nextInt(10000) + 100 < text.getLevel()) {
+        if (blinkCounter > 4) {
+            blinkCounter = 0;
+            blink = r.nextInt(10000) + 100 < text.getLevel();
+        } else {
+            blinkCounter++;
+        }
+        if (blink) {
             black.draw(canvas);
             white.draw(canvas);
         }

@@ -36,7 +36,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setUpBoardView();
         // experiemnt
-        setUpStangeView();
+//        setUpStangeView();
+        StackHistory sh = new StackHistory();
 
     }
 
@@ -49,6 +50,6 @@ public class MainActivity extends AppCompatActivity {
 
     void setUpStangeView() {
         LinearLayout ll = findViewById(R.id.strange_view);
-//        ll.addView(new StrangeView(this));
+        ll.addView(new StrangeView(this));
     }
 }

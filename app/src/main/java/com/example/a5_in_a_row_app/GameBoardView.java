@@ -107,11 +107,11 @@ public class GameBoardView extends View {
         // center it horizontally
         canvas.translate((getWidth() - size) / 2f, 0);
         int[][] board = game.getBoard();
-        brush.setStyle(Paint.Style.FILL);
-        brush.setColor(Color.GRAY);
-        canvas.drawRect(0, 0, size, size, brush);
-        brush.setColor(Color.DKGRAY);
+//        brush.setStyle(Paint.Style.FILL);
+//        brush.setColor(Color.GRAY);
         brush.setStyle(Paint.Style.STROKE);
+        brush.setColor(Color.DKGRAY);
+        canvas.drawRect(0, 0, size, size, brush);
         for (int i = 0; i < numTileOneSide; i++) {
             for (int j = 0; j < numTileOneSide; j++) {
                 float x = i * tileSize;
