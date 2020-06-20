@@ -4,6 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.ValueAnimator;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
+import android.view.View;
 import android.widget.LinearLayout;
 
 public class MainActivity extends AppCompatActivity {
@@ -14,11 +17,27 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        playSplashScreen();
+        new Handler().postDelayed(() -> {
+
+        }, 3000);
+    }
+
+    void playSplashScreen() {
+        View v = new SplashScreenView(this);
+        setContentView(v);
+        v.setOnClickListener(view -> {
+            startMain();
+        });
+    }
+
+
+    void startMain() {
         setContentView(R.layout.activity_main);
         setUpBoardView();
-
         // experiemnt
         setUpStangeView();
+
     }
 
     void setUpBoardView() {

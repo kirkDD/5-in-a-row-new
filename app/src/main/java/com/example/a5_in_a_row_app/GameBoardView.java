@@ -72,6 +72,8 @@ public class GameBoardView extends View {
             case START:
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     state = State.SELECTING;
+                    updateModel(current);
+                    invalidate();
                     return true;
                 }
             case SELECTING:

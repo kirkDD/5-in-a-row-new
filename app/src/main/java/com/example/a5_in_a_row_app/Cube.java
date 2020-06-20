@@ -3,6 +3,7 @@ package com.example.a5_in_a_row_app;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.widget.TextView;
 
 import java.util.Calendar;
 
@@ -41,6 +42,7 @@ public class Cube {
         c.drawPath(getQuadPath(newCoors[0], newCoors[2], newCoors[6], newCoors[4]), p);
         c.drawPath(getQuadPath(newCoors[1], newCoors[3], newCoors[7], newCoors[5]), p);
         c.translate(-cX,-cY);
+
     }
 
     Path getQuadPath(float[] a, float[] b, float[] c, float[] d) {
