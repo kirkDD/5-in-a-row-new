@@ -55,17 +55,6 @@ public class GameBoardView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-//        switch (event.getAction()) {
-//            case MotionEvent.ACTION_UP:
-//                registerMove(event.getX(), event.getY());
-//                return true;
-//            case MotionEvent.ACTION_MOVE:
-//                invalidate();
-//                return true;
-//            default:
-//                break;
-//        }
-//        return false;
         //get location of the current selection on the board
         Pair<Integer, Integer> current = essentialGeometry(new PointF(event.getX(), event.getY()));
         switch(state) {
@@ -115,6 +104,8 @@ public class GameBoardView extends View {
         if (size == 0) initDims();
         // how to draw a board?
         // game != null
+        // center it horizontally
+
         int[][] board = game.getBoard();
         brush.setStyle(Paint.Style.FILL);
         brush.setColor(Color.GRAY);

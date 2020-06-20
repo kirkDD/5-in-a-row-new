@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.drawable.ClipDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -37,6 +38,15 @@ public class SplashScreenView extends View {
         click = l;
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            text.setLevel(10000);
+            invalidate();
+            new Handler().postDelayed(() -> click.onClick(this), 800);
+        }
+        return true;
+    }
 
     public SplashScreenView(Context context) {
         super(context);
@@ -55,6 +65,7 @@ public class SplashScreenView extends View {
     }
 
     void setNextLevel() {
+        if (text.getLevel() >= 10000) return;
         nextLevel = r.nextInt(10000 - text.getLevel()) + text.getLevel();
         if (nextLevel > 9900) {
             nextLevel = 10000;
@@ -62,8 +73,11 @@ public class SplashScreenView extends View {
         ValueAnimator va = ValueAnimator.ofInt(text.getLevel(), nextLevel);
         va.setDuration(2 * (nextLevel - text.getLevel()) / (r.nextInt(5) + 2));
         va.addUpdateListener(thing -> {
-            text.setLevel((int) thing.getAnimatedValue());
-            invalidate();
+            int newV = (int) thing.getAnimatedValue();
+            if (text.getLevel() < newV) {
+                text.setLevel(newV);
+                invalidate();
+            }
         });
         va.addListener(new Animator.AnimatorListener() {
             @Override
