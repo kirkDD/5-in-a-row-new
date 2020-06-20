@@ -21,7 +21,51 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/game_board_area" />
+        app:layout_constraintTop_toBottomOf="@+id/game_board_area" >
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/undo_button"
+        android:layout_width="50dp"
+        android:layout_height="35dp"
+        android:layout_weight="1"
+        android:background="@drawable/undo"
+        android:contentDescription="@string/undo_desc"
+        android:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@id/strange_view"
+        app:layout_constraintLeft_toLeftOf="parent"
+        />
+
+    <TextView
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center"
+        android:text="@string/undo_label"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        app:layout_constraintTop_toBottomOf="@+id/undo_button"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <ImageButton
+        android:id="@+id/redo_button"
+        android:layout_width="50dp"
+        android:layout_height="35dp"
+        android:layout_weight="1"
+        android:background="@drawable/redo"
+        android:contentDescription="@string/redo_desc"
+        android:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@id/strange_view"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <TextView
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center"
+        android:text="@string/redo_label"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        app:layout_constraintTop_toBottomOf="@+id/redo_button"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

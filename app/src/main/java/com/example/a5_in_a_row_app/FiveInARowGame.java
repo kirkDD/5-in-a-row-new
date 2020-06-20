@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class FiveInARowGame {
@@ -128,6 +129,31 @@ public class FiveInARowGame {
             boardAsList.get(player).add(new int[]{x, y});
             System.out.println("move played");
             this.updateGameState();
+            return "good";
+        }
+        return "bad";
+    }
+
+    /**
+     * make a move in game
+     * @param  x      [description]
+     * @param  y      [description]
+     * @return        a status code in string
+     */
+    public String unmakeMove(int x, int y) {
+        System.out.println("unmaking move " + x + ", " + y);
+        if (turn == 0 || gameState != 0) {
+            return "wrong";
+        }
+        if (x > board.length || y > board[0].length) {
+            return "bad";
+        }
+        if (board[x][y] != 0) {
+            int player = board[x][y];
+            board[x][y] = 0;
+            turn = -turn;
+            Objects.requireNonNull(boardAsList.get(player)).remove(new int[]{x, y});
+            System.out.println("undo done");
             return "good";
         }
         return "bad";

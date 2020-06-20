@@ -20,7 +20,7 @@ public class GameBoardView extends View {
 
     // from parent
     FiveInARowGame game;
-
+    StackHistory history;
 
     Drawable BLACK_PNG;
     Drawable WHITE_PNG;
@@ -30,12 +30,13 @@ public class GameBoardView extends View {
     // the current location of selection on the board
     Pair<Integer, Integer> location;
 
-    public GameBoardView(Context context, FiveInARowGame game) {
+    public GameBoardView(Context context, FiveInARowGame game, StackHistory history) {
 
         super(context);
         setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         // initialize
         this.game = game;
+        this.history = history;
         brush = new Paint();
         brush.setStrokeWidth(3);
         brush.setColor(Color.DKGRAY);
@@ -106,6 +107,7 @@ public class GameBoardView extends View {
         int y = (int) (yPos / tileSize);
         if (x < numTileOneSide && y < numTileOneSide) {
             game.makeMove(x, y, game.nextPlayer());
+            history.addAction(Pair.create(x, y));
         }
     }
 
