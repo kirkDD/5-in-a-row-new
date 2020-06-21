@@ -73,6 +73,7 @@
         android:id="@+id/finished_screen"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/game_board_area">
         <TextView
             android:id="@+id/instructionTextView"
@@ -83,8 +84,6 @@
             android:textAlignment="center"
             android:textColor="@android:color/holo_blue_bright"
             android:textSize="60sp"
-            android:visibility="invisible"
-            android:text="sfgadg"
             app:layout_constraintTop_toTopOf="@+id/finished_screen"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

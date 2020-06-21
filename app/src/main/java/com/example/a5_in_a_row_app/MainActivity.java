@@ -88,8 +88,10 @@ public class MainActivity extends AppCompatActivity{
      */
     void onGameCompleted(int gameState) {
         setContentView(R.layout.activity_main);
-        TextView txt = findViewById(R.id.instructionTextView);
-        txt.setText(gameState);
+        ConstraintLayout finishedScreen = findViewById(R.id.finished_screen);
+        TextView finishedText = findViewById(R.id.instructionTextView);
+        finishedText.setText("Somebody wins!!");
+        finishedScreen.setVisibility(View.VISIBLE);
     }
 
     /**

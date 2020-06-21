@@ -107,10 +107,10 @@ public class GameBoardView extends View {
         int x = (int) (xPos / tileSize);
         int y = (int) (yPos / tileSize);
         if (x < numTileOneSide && y < numTileOneSide) {
-            String result = game.makeMove(x, y, game.nextPlayer());
-            if (result.equals("good")) {
+            if (game.makeMove(x, y, game.nextPlayer()).equals("good")) {
                 history.addAction(Pair.create(x, y));
-            } else if (result.equals("wrong")) {
+            }
+            if(game.getGameState() != 0) {
                 invokeGameCompletedListeners(game.getGameState());
             }
         }
@@ -162,7 +162,7 @@ public class GameBoardView extends View {
     }
 
     public Pair<Integer, Integer> essentialGeometry(PointF p) {
-        return Pair.create((int) (p.x / tileSize), (int) (p.y / tileSize));
+        return Pair.create((int) ((p.x - ((getWidth() - size) / 2f)) / tileSize), (int) (p.y / tileSize));
     }
 
     /**
