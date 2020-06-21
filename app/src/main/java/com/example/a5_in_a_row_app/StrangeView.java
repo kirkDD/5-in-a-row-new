@@ -9,6 +9,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.view.MotionEvent;
 import android.view.View;
 
 public class StrangeView extends View {
@@ -49,12 +50,11 @@ public class StrangeView extends View {
                 // turn into angles
                 ///////////// issue: discontinuity from -PI to PI
                 float alpha = (float) Math.atan2(accelerations[0], accelerations[1]);
-                System.out.println(alpha);
                 float beta = (float) Math.atan2(accelerations[2], accelerations[1]);
                 if (c != null) {
                     // solve the jump -PI to PI ???
                     targetAngles[0] = alpha;
-                    targetAngles[2] = beta;
+                    targetAngles[2] = - beta;
                 }
                 for (int i = 0; i < accelerations.length; i++) {
                     // map to color, after normalized
@@ -108,8 +108,26 @@ public class StrangeView extends View {
                 }
             }
         }).start();
+
+        isDragging = false;
     }
 
+    boolean isDragging;
+    float lastX;
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_MOVE) {
+            if (isDragging) {
+                targetAngles[1] += (lastX - event.getX()) / 100;
+            } else {
+                isDragging = true;
+            }
+            lastX = event.getX();
+        } else {
+            isDragging = false;
+        }
+        return true;
+    }
 
     @Override
     protected void onDraw(Canvas canvas) {

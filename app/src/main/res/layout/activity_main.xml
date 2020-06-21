@@ -19,7 +19,7 @@
         android:id="@+id/strange_view"
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="100dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/game_board_area" >
     </LinearLayout>
