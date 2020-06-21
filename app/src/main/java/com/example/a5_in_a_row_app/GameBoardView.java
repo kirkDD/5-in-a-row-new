@@ -107,10 +107,10 @@ public class GameBoardView extends View {
         int x = (int) (xPos / tileSize);
         int y = (int) (yPos / tileSize);
         if (x < numTileOneSide && y < numTileOneSide) {
-            String result = game.makeMove(x, y, game.nextPlayer());
-            if (result.equals("good")) {
+            if (game.makeMove(x, y, game.nextPlayer()).equals("good")) {
                 history.addAction(Pair.create(x, y));
-            } else if (result.equals("wrong")) {
+            }
+            if(game.getGameState() != 0) {
                 invokeGameCompletedListeners(game.getGameState());
             }
         }
