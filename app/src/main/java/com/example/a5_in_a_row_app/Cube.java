@@ -76,7 +76,7 @@ public class Cube {
     // return a drawable Path
     Path getQuadPath(float[] a, float[] b, float[] c, float[] d) {
         Path path = new Path();
-        if (isFacingOut(a, b, c, d)) {
+        if (isFacingOut(a,b,c,d)) {
             path.moveTo(a[0], a[1]);
             path.lineTo(b[0], b[1]);
             path.lineTo(c[0], c[1]);
