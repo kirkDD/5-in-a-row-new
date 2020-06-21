@@ -4,4 +4,7 @@
     <string name="redo_desc">Redo an action</string>
     <string name="undo_label">Undo</string>
     <string name="undo_desc">Undo an action</string>
+    <string name="play_again">Play  Again</string>
+    <string name="try_again">Try   Again</string>
+    <string name="return_home">Return Home</string>
 </resources>

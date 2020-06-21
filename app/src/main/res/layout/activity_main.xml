@@ -34,16 +34,19 @@
         android:background="@drawable/undo"
         android:contentDescription="@string/undo_desc"
         android:layout_marginTop="10dp"
+        android:visibility="visible"
         app:layout_constraintTop_toBottomOf="@id/strange_view"
         app:layout_constraintLeft_toLeftOf="parent"
         />
 
     <TextView
+        android:id="@+id/undo_button_text"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_gravity="top|center"
         android:text="@string/undo_label"
         android:textAlignment="center"
+        android:visibility="visible"
         android:textColor="@android:color/holo_blue_bright"
         app:layout_constraintTop_toBottomOf="@+id/undo_button"
         app:layout_constraintStart_toStartOf="parent"/>
@@ -56,35 +59,134 @@
         android:background="@drawable/redo"
         android:contentDescription="@string/redo_desc"
         android:layout_marginTop="10dp"
+        android:visibility="visible"
         app:layout_constraintTop_toBottomOf="@id/strange_view"
         app:layout_constraintRight_toRightOf="parent" />
 
     <TextView
+        android:id="@+id/redo_button_text"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_gravity="top|center"
         android:text="@string/redo_label"
         android:textAlignment="center"
+        android:visibility="visible"
         android:textColor="@android:color/holo_blue_bright"
         app:layout_constraintTop_toBottomOf="@+id/redo_button"
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/finished_screen"
+        android:id="@+id/win_screen"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/game_board_area">
+        app:layout_constraintTop_toTopOf="@+id/game_board_area">
+
         <TextView
-            android:id="@+id/instructionTextView"
+            android:id="@+id/instructionTextViewWin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:layout_marginBottom="284dp"
             android:textAlignment="center"
             android:textColor="@color/colorText"
+            android:fontFamily="@font/bungee_inline"
             android:textSize="60sp"
-            app:layout_constraintTop_toTopOf="@+id/finished_screen"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Space
+            android:id="@+id/win_space"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/spacer_height"
+            app:layout_constraintTop_toBottomOf="@+id/instructionTextViewWin"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/win_space">
+
+            <Button
+                android:id="@+id/play_again"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/play_again"
+                style="?android:attr/borderlessButtonStyle"
+                android:textSize="@dimen/button_text_size"
+                android:textColor="@color/colorAccent"
+                android:fontFamily="@font/bungee_inline" />
+
+            <Button
+                android:id="@+id/return_home_win"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/return_home"
+                style="?android:attr/borderlessButtonStyle"
+                android:textSize="@dimen/button_text_size"
+                android:textColor="@color/colorAccent"
+                android:fontFamily="@font/bungee_inline" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/loss_screen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintTop_toTopOf="@+id/game_board_area">
+
+        <TextView
+            android:id="@+id/instructionTextViewLoss"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:textAlignment="center"
+            android:textColor="@color/colorText"
+            android:fontFamily="@font/bungee_inline"
+            android:textSize="60sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Space
+            android:id="@+id/loss_space"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/spacer_height"
+            app:layout_constraintTop_toBottomOf="@+id/instructionTextViewLoss"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/loss_space">
+
+            <Button
+                android:id="@+id/try_again"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                style="?android:attr/borderlessButtonStyle"
+                android:text="@string/try_again"
+                android:textSize="@dimen/button_text_size"
+                android:textColor="@color/colorAccent"
+                android:fontFamily="@font/bungee_inline" />
+
+            <Button
+                android:id="@+id/return_home_loss"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                style="?android:attr/borderlessButtonStyle"
+                android:text="@string/return_home"
+                android:textSize="@dimen/button_text_size"
+                android:textColor="@color/colorAccent"
+                android:fontFamily="@font/bungee_inline" />
+        </LinearLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -88,10 +88,22 @@ public class MainActivity extends AppCompatActivity{
      */
     void onGameCompleted(int gameState) {
         setContentView(R.layout.activity_main);
-        ConstraintLayout finishedScreen = findViewById(R.id.finished_screen);
-        TextView finishedText = findViewById(R.id.instructionTextView);
-        finishedText.setText("Somebody wins!!");
-        finishedScreen.setVisibility(View.VISIBLE);
+
+        if (gameState == 1) {
+            ConstraintLayout finishedScreen = findViewById(R.id.win_screen);
+            TextView finishedText = findViewById(R.id.instructionTextViewWin);
+            finishedText.setText("congratulations black wins");
+            finishedScreen.setVisibility(View.VISIBLE);
+        } else {
+            ConstraintLayout finishedScreen = findViewById(R.id.loss_screen);
+            TextView finishedText = findViewById(R.id.instructionTextViewLoss);
+            finishedText.setText("congratulations white wins");
+            finishedScreen.setVisibility(View.VISIBLE);
+        }
+        findViewById(R.id.undo_button).setVisibility(View.INVISIBLE);
+        findViewById(R.id.redo_button).setVisibility(View.INVISIBLE);
+        findViewById(R.id.undo_button_text).setVisibility(View.INVISIBLE);
+        findViewById(R.id.redo_button_text).setVisibility(View.INVISIBLE);
     }
 
     /**
