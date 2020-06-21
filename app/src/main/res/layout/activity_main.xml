@@ -82,7 +82,7 @@
             android:layout_gravity="bottom"
             android:layout_marginBottom="284dp"
             android:textAlignment="center"
-            android:textColor="@android:color/holo_blue_bright"
+            android:textColor="@color/colorText"
             android:textSize="60sp"
             app:layout_constraintTop_toTopOf="@+id/finished_screen"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
