@@ -9,6 +9,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.view.MotionEvent;
 import android.view.View;
 
 public class StrangeView extends View {
@@ -37,11 +38,27 @@ public class StrangeView extends View {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
                 accelerations = sensorEvent.values;
+                // normalize and turn into angles
+                float sum = 0;
+                for (float f : accelerations) {
+                    sum += f * f;
+                }
+                sum = (float) Math.sqrt(sum);
                 for (int i = 0; i < accelerations.length; i++) {
-                    colors[i] = map(accelerations[i], -10, 10, 0, 255);
-                    if (c != null) {
-                        targetAngles[i] = map(accelerations[i], -10, 10, (float) (-Math.PI), (float) (Math.PI));
-                    }
+                    accelerations[i] /= sum;
+                }
+                // turn into angles
+                ///////////// issue: discontinuity from -PI to PI
+                float alpha = (float) Math.atan2(accelerations[0], accelerations[1]);
+                float beta = (float) Math.atan2(accelerations[2], accelerations[1]);
+                if (c != null) {
+                    // solve the jump -PI to PI ???
+                    targetAngles[0] = alpha;
+                    targetAngles[2] = - beta;
+                }
+                for (int i = 0; i < accelerations.length; i++) {
+                    // map to color, after normalized
+                    colors[i] = map(accelerations[i], -1, 1, 0, 255);
                 }
             }
 
@@ -59,32 +76,73 @@ public class StrangeView extends View {
             while (true) {
                 try {
                     // FPS
-                    Thread.sleep(30);
+                    Thread.sleep(20);
                     for (int i = 0; i < currAngles.length; i++) {
-                        currAngles[i] += (targetAngles[i] - currAngles[i]) * 0.1;
+                        // solve the jump issue:
+                        // how to get to tar[i]? knowing that -PI and PI are connected
+                        float delta = (targetAngles[i] - currAngles[i]);
+                        if (Math.abs(delta) > Math.PI) {
+                            // go the other way
+                            if (targetAngles[i] > 0) {
+                                delta = (float) - (Math.PI - targetAngles[i] + Math.PI + currAngles[i]);
+                            } else {
+                                delta = (float) (Math.PI + targetAngles[i] + Math.PI - currAngles[i]);
+                            }
+                        }
+                        // cap delta
+//                        delta = (float) Math.min(delta, 0.01);
+                        currAngles[i] += delta * 0.1f;
+                        if (currAngles[i] < - Math.PI) {
+                            currAngles[i] += 2f * Math.PI;
+                        }
+                        if (currAngles[i] > Math.PI) {
+                            currAngles[i] -= 2f * Math.PI;
+                        }
                     }
-                    c.setAngle(currAngles[0], currAngles[1], currAngles[2]);
-                    this.post(this::invalidate);
+                    if (c != null) {
+                        c.setAngle(currAngles[0], currAngles[1], currAngles[2]);
+                    }
+                    this.post(this::invalidate); // cant use runOnUiThread somehow
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }).start();
+
+        isDragging = false;
     }
 
+    boolean isDragging;
+    float lastX;
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_MOVE) {
+            if (isDragging) {
+                targetAngles[1] += (lastX - event.getX()) / 100;
+            } else {
+                isDragging = true;
+            }
+            lastX = event.getX();
+        } else {
+            isDragging = false;
+        }
+        return true;
+    }
 
     @Override
     protected void onDraw(Canvas canvas) {
         // draw background
+        brush.setStyle(Paint.Style.STROKE);
+        brush.setStrokeWidth(25);
         brush.setColor(Color.rgb((int) colors[0], (int) colors[1], (int) colors[2]));
         canvas.drawRect(0, 0, getWidth(), getHeight(), brush);
         // draw cube
         if (c == null) {
             c = new Cube(Math.min(getWidth(), getHeight()) / 3f);
-            c.rotate(1, 1, 1);
             cX = getWidth() / 2f;
             cY = getHeight() / 2f;
         }
+        brush.setStrokeWidth(10);
         brush.setColor(Color.argb(100, 0, 0, 0));
         c.draw(canvas, brush, cX, cY);
 
