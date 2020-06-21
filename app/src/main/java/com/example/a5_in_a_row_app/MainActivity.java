@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
         Pair<Integer, Integer> action = history.redo();
         if (action != null) {
             game.makeMove(action.first, action.second, game.nextPlayer());
+            boardView.invalidate();
         }
     }
 
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         Pair<Integer, Integer> action = history.undo();
         if (action != null) {
             game.unmakeMove(action.first, action.second);
+            boardView.invalidate();
         }
     }
 
@@ -62,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         setUpBoardView();
         // experiemnt
         setUpStangeView();
-        findViewById(R.id.redo_button).setOnClickListener((v) -> undo());
+        findViewById(R.id.undo_button).setOnClickListener((v) -> undo());
         findViewById(R.id.redo_button).setOnClickListener((v) -> redo());
     }
 
