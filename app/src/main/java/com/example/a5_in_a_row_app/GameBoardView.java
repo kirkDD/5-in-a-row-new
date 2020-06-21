@@ -162,7 +162,7 @@ public class GameBoardView extends View {
     }
 
     public Pair<Integer, Integer> essentialGeometry(PointF p) {
-        return Pair.create((int) (p.x / tileSize), (int) (p.y / tileSize));
+        return Pair.create((int) ((p.x - ((getWidth() - size) / 2f)) / tileSize), (int) (p.y / tileSize));
     }
 
     /**
