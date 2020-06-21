@@ -25,12 +25,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         history = new StackHistory();
         playSplashScreen();
-        new Handler().postDelayed(() -> {
 
-        }, 3000);
-        setContentView(R.layout.activity_main);
-        findViewById(R.id.redo_button).setOnClickListener((v) -> undo());
-        findViewById(R.id.redo_button).setOnClickListener((v) -> redo());
     }
 
     /**
@@ -67,7 +62,8 @@ public class MainActivity extends AppCompatActivity {
         setUpBoardView();
         // experiemnt
         setUpStangeView();
-
+        findViewById(R.id.redo_button).setOnClickListener((v) -> undo());
+        findViewById(R.id.redo_button).setOnClickListener((v) -> redo());
     }
 
     void setUpBoardView() {
