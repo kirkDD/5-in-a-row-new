@@ -1,5 +1,6 @@
 package com.example.a5_in_a_row_app;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -22,6 +23,11 @@ public class StrangeView extends View {
     float cX;
     float cY;
 
+    // for cube
+    float[] currAngles;
+    float[] targetAngles;
+
+    // animate a percentage
     public StrangeView(Context context) {
         super(context);
         colors = new float[3];
@@ -31,18 +37,12 @@ public class StrangeView extends View {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
                 accelerations = sensorEvent.values;
-                float[] changeAngle = new float[3];
                 for (int i = 0; i < accelerations.length; i++) {
-                    colors[i] = map(accelerations[i], -10, 10, 0,255);
+                    colors[i] = map(accelerations[i], -10, 10, 0, 255);
                     if (c != null) {
-                        changeAngle[i] = map(accelerations[i], -10, 10, (float) (- Math.PI), (float) (Math.PI));
+                        targetAngles[i] = map(accelerations[i], -10, 10, (float) (-Math.PI), (float) (Math.PI));
                     }
                 }
-                if (c != null) {
-                    c.setAngle(changeAngle[0], changeAngle[1], changeAngle[2]);
-                }
-
-                invalidate();
             }
 
             @Override
@@ -52,6 +52,24 @@ public class StrangeView extends View {
         }, acceleration, SensorManager.SENSOR_DELAY_NORMAL);
         brush = new Paint();
         brush.setStyle(Paint.Style.FILL);
+        brush.setStrokeWidth(5);
+        currAngles = new float[3];
+        targetAngles = new float[3];
+        new Thread(() -> {
+            while (true) {
+                try {
+                    // FPS
+                    Thread.sleep(30);
+                    for (int i = 0; i < currAngles.length; i++) {
+                        currAngles[i] += (targetAngles[i] - currAngles[i]) * 0.1;
+                    }
+                    c.setAngle(currAngles[0], currAngles[1], currAngles[2]);
+                    this.post(this::invalidate);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
 
@@ -59,7 +77,7 @@ public class StrangeView extends View {
     protected void onDraw(Canvas canvas) {
         // draw background
         brush.setColor(Color.rgb((int) colors[0], (int) colors[1], (int) colors[2]));
-        canvas.drawRect(0,0,getWidth(),getHeight(),brush);
+        canvas.drawRect(0, 0, getWidth(), getHeight(), brush);
         // draw cube
         if (c == null) {
             c = new Cube(Math.min(getWidth(), getHeight()) / 3f);
@@ -67,8 +85,8 @@ public class StrangeView extends View {
             cX = getWidth() / 2f;
             cY = getHeight() / 2f;
         }
-        brush.setColor(Color.argb(100,0,0,0));
-        c.draw(canvas, brush, cX,cY);
+        brush.setColor(Color.argb(100, 0, 0, 0));
+        c.draw(canvas, brush, cX, cY);
 
     }
 

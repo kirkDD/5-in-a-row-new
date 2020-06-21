@@ -14,6 +14,7 @@ public class FiveInARowGame {
 
     static final int WHITE = -1;
     static final int BLACK = 1;
+    static final int EMPTY = 0;
 
 
     // the game board
@@ -123,7 +124,7 @@ public class FiveInARowGame {
         if (x > board.length || y > board[0].length) {
             return "bad";
         }
-        if (board[x][y] == 0 && turn == player) {
+        if (board[x][y] == EMPTY && turn == player) {
             board[x][y] = player;
             turn = -turn;
             boardAsList.get(player).add(new int[]{x, y});
@@ -169,15 +170,16 @@ public class FiveInARowGame {
             return;
             // game is not going
         }
-        if (checkGridFor(-1)) {
-            this.gameState = -1;
-        } else if (checkGridFor(1)) {
-            this.gameState = 1;
+
+        if (checkGridFor(WHITE)) {
+            this.gameState = WHITE;
+        } else if (checkGridFor(BLACK)) {
+            this.gameState = BLACK;
         } else {
             // check draw
             for (int i = 0; i < board.length; i++) {
                 for (int j = 0; j < board[0].length; j++) {
-                    if (board[i][j] == 0) {
+                    if (board[i][j] == EMPTY) {
                         // there are empty space to play
                         return;
                     }
@@ -236,13 +238,13 @@ public class FiveInARowGame {
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board.length; j++) {
                 switch (board[i][j]) {
-                    case 0:
+                    case EMPTY:
                         s.append('_');
                         break;
-                    case 1:
+                    case BLACK:
                         s.append('x');
                         break;
-                    case -1:
+                    case WHITE:
                         s.append('o');
                         break;
                     default:
