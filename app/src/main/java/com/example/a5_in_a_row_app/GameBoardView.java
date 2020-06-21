@@ -11,6 +11,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class GameBoardView extends View {
 
     Paint brush;
@@ -29,7 +34,13 @@ public class GameBoardView extends View {
     State state;
     // the current location of selection on the board
     Pair<Integer, Integer> location;
-
+    List<GameCompletedListener> gameCompletedListeners;
+    /**
+     * class which defines a listener to be called when the game is over(someone wins)
+     */
+    public interface GameCompletedListener {
+        void onGameCompleted(int gameState);
+    }
     public GameBoardView(Context context, FiveInARowGame game, StackHistory history) {
 
         super(context);
@@ -37,6 +48,7 @@ public class GameBoardView extends View {
         // initialize
         this.game = game;
         this.history = history;
+        gameCompletedListeners = new ArrayList<>();
         brush = new Paint();
         brush.setStrokeWidth(3);
         brush.setColor(Color.DKGRAY);
@@ -95,8 +107,12 @@ public class GameBoardView extends View {
         int x = (int) (xPos / tileSize);
         int y = (int) (yPos / tileSize);
         if (x < numTileOneSide && y < numTileOneSide) {
-            game.makeMove(x, y, game.nextPlayer());
-            history.addAction(Pair.create(x, y));
+            String result = game.makeMove(x, y, game.nextPlayer());
+            if (result.equals("good")) {
+                history.addAction(Pair.create(x, y));
+            } else if (result.equals("wrong")) {
+                invokeGameCompletedListeners(game.getGameState());
+            }
         }
     }
 
@@ -109,8 +125,11 @@ public class GameBoardView extends View {
         // center it horizontally
         canvas.translate((getWidth() - size) / 2f, 0);
         int[][] board = game.getBoard();
+        brush.setStyle(Paint.Style.FILL);
+        brush.setColor(Color.GRAY);
+        canvas.drawRect(0, 0, size, size, brush);
         brush.setStyle(Paint.Style.STROKE);
-        brush.setColor(Color.DKGRAY);
+        brush.setColor(Color.BLACK);
         canvas.drawRect(0, 0, size, size, brush);
         for (int i = 0; i < numTileOneSide; i++) {
             for (int j = 0; j < numTileOneSide; j++) {
@@ -144,5 +163,33 @@ public class GameBoardView extends View {
 
     public Pair<Integer, Integer> essentialGeometry(PointF p) {
         return Pair.create((int) (p.x / tileSize), (int) (p.y / tileSize));
+    }
+
+    /**
+     * Registers a new listener
+     *
+     * @param l New listener (should not be null).
+     */
+    public final void addGameCompletedListener(@NonNull GameCompletedListener l) {
+        gameCompletedListeners.add(l);
+    }
+
+    /**
+     * Removes a GameCompletedListener, if it exists
+     *
+     * @param l Listener that should be removed (should not be null).
+     */
+    public final void removeGameCompletedListener(GameCompletedListener l) {
+        gameCompletedListeners.remove(l);
+    }
+
+    /**
+     * Method that will notify all the registered listeners that the game has finished
+     * @param gameState who wins : 1 -> black wins, -1 -> white wins, 2 -> draw
+     */
+    protected void invokeGameCompletedListeners(int gameState) {
+        for (GameCompletedListener l : gameCompletedListeners) {
+            l.onGameCompleted(gameState);
+        }
     }
 }

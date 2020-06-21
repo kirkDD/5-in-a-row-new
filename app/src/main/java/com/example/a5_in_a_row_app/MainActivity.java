@@ -11,10 +11,12 @@ import android.util.Pair;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
     GameBoardView boardView;
     FiveInARowGame game;
@@ -62,10 +64,11 @@ public class MainActivity extends AppCompatActivity {
     void startMain() {
         setContentView(R.layout.activity_main);
         setUpBoardView();
-        // experiemnt
+        // experiment
         setUpStangeView();
         findViewById(R.id.undo_button).setOnClickListener((v) -> undo());
         findViewById(R.id.redo_button).setOnClickListener((v) -> redo());
+        boardView.addGameCompletedListener(this::onGameCompleted);
     }
 
     void setUpBoardView() {
@@ -78,5 +81,23 @@ public class MainActivity extends AppCompatActivity {
     void setUpStangeView() {
         LinearLayout ll = findViewById(R.id.strange_view);
         ll.addView(new StrangeView(this));
+    }
+
+    /**
+     *  Called when the game is completed
+     */
+    void onGameCompleted(int gameState) {
+        setContentView(R.layout.activity_main);
+        TextView txt = findViewById(R.id.instructionTextView);
+        txt.setText(gameState);
+    }
+
+    /**
+     * Called before the activity is destroyed.
+     */
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        boardView.removeGameCompletedListener(this::onGameCompleted);
     }
 }

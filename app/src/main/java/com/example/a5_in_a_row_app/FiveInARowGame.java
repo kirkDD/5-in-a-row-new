@@ -1,6 +1,8 @@
 package com.example.a5_in_a_row_app;
 
 
+import android.widget.TextView;
+
 import java.lang.Math;
 import java.lang.StringBuilder;
 import java.util.ArrayList;
@@ -136,18 +138,17 @@ public class FiveInARowGame {
     }
 
     /**
-     * make a move in game
+     * unmake a move in game
      * @param  x      [description]
      * @param  y      [description]
-     * @return        a status code in string
      */
-    public String unmakeMove(int x, int y) {
+    public void unmakeMove(int x, int y) {
         System.out.println("unmaking move " + x + ", " + y);
         if (turn == 0 || gameState != 0) {
-            return "wrong";
+            return;
         }
         if (x > board.length || y > board[0].length) {
-            return "bad";
+            return;
         }
         if (board[x][y] != 0) {
             int player = board[x][y];
@@ -155,9 +156,7 @@ public class FiveInARowGame {
             turn = -turn;
             Objects.requireNonNull(boardAsList.get(player)).remove(new int[]{x, y});
             System.out.println("undo done");
-            return "good";
         }
-        return "bad";
     }
 
     /**
@@ -188,6 +187,14 @@ public class FiveInARowGame {
             this.gameState = 2;
         }
     }
+
+    /**
+     *  return the current game state
+     */
+    public int getGameState() {
+        return this.gameState;
+    }
+
     // see if player wins
     private boolean checkGridFor(int player) {
         // check vertical and horizontal
