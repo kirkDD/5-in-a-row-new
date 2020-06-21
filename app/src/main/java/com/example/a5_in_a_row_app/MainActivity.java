@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         new Handler().postDelayed(() -> {
 
         }, 3000);
+        setContentView(R.layout.activity_main);
         findViewById(R.id.redo_button).setOnClickListener((v) -> undo());
         findViewById(R.id.redo_button).setOnClickListener((v) -> redo());
     }

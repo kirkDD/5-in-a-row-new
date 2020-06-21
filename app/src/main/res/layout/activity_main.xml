@@ -31,7 +31,6 @@
         android:layout_weight="1"
         android:background="@drawable/undo"
         android:contentDescription="@string/undo_desc"
-        android:visibility="visible"
         app:layout_constraintTop_toBottomOf="@id/strange_view"
         app:layout_constraintLeft_toLeftOf="parent"
         />
@@ -53,7 +52,6 @@
         android:layout_weight="1"
         android:background="@drawable/redo"
         android:contentDescription="@string/redo_desc"
-        android:visibility="visible"
         app:layout_constraintTop_toBottomOf="@id/strange_view"
         app:layout_constraintRight_toRightOf="parent" />
 
