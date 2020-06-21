@@ -104,7 +104,7 @@ public class GameBoardView extends View {
         }
     }
     void registerMove(float xPos, float yPos) {
-        int x = (int) (xPos / tileSize);
+        int x = (int) ((xPos - ((getWidth() - size) / 2f)) / tileSize);
         int y = (int) (yPos / tileSize);
         if (x < numTileOneSide && y < numTileOneSide) {
             if (game.makeMove(x, y, game.nextPlayer()).equals("good")) {
