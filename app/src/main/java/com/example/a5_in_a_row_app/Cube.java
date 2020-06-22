@@ -37,7 +37,6 @@ public class Cube {
 
 
         p.setStyle(Paint.Style.FILL);
-        p.setColor(Color.GREEN);
         c.drawPath(getQuadPath(newCoors[0], newCoors[1], newCoors[3], newCoors[2]), p);
         c.drawPath(getQuadPath(newCoors[4], newCoors[5], newCoors[7], newCoors[6]), p);
 
@@ -48,7 +47,7 @@ public class Cube {
         c.drawPath(getQuadPath(newCoors[1], newCoors[3], newCoors[7], newCoors[5]), p);
 
         p.setStyle(Paint.Style.STROKE);
-        p.setColor(Color.RED);
+        p.setColor(p.getColor() / 2);
         c.drawPath(getQuadPath(newCoors[0], newCoors[1], newCoors[3], newCoors[2]), p);
         c.drawPath(getQuadPath(newCoors[4], newCoors[5], newCoors[7], newCoors[6]), p);
 

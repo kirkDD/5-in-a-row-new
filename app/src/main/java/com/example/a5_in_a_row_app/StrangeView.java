@@ -79,7 +79,7 @@ public class StrangeView extends View {
     protected void onDraw(Canvas canvas) {
         // draw background
         brush.setColor(Color.rgb((int) colors[0], (int) colors[1], (int) colors[2]));
-        canvas.drawRect(0, 0, getWidth(), getHeight(), brush);
+//        canvas.drawRect(0, 0, getWidth(), getHeight(), brush);
         // draw cube
         if (c == null) {
             c = new Cube(Math.min(getWidth(), getHeight()) / 3f);
@@ -87,7 +87,6 @@ public class StrangeView extends View {
             cX = getWidth() / 2f;
             cY = getHeight() / 2f;
         }
-        brush.setColor(Color.argb(100, 0, 0, 0));
         c.draw(canvas, brush, cX, cY);
 
     }
