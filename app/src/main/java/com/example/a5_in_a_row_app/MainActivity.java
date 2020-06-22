@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         history = new StackHistory();
         playSplashScreen();
-
     }
 
     /**
@@ -63,28 +62,14 @@ public class MainActivity extends AppCompatActivity{
 
 
     void startMain() {
+        history.clear();
         setContentView(R.layout.activity_main);
         setUpBoardView();
         // experiment
         setUpStangeView();
-        findViewById(R.id.play_again).setOnClickListener((v) -> reset());
         findViewById(R.id.undo_button).setOnClickListener((v) -> undo());
         findViewById(R.id.redo_button).setOnClickListener((v) -> redo());
         boardView.addGameCompletedListener(this::onGameCompleted);
-    }
-
-    /**
-     *  restart the game
-     */
-    void reset() {
-        System.out.println("herehere");
-        game.reset();
-        findViewById(R.id.undo_button).setVisibility(View.VISIBLE);
-        findViewById(R.id.redo_button).setVisibility(View.VISIBLE);
-        findViewById(R.id.undo_button_text).setVisibility(View.VISIBLE);
-        findViewById(R.id.redo_button_text).setVisibility(View.VISIBLE);
-        findViewById(R.id.win_screen).setVisibility(View.INVISIBLE);
-        boardView.invalidate();
     }
 
     void setUpBoardView() {
@@ -111,16 +96,35 @@ public class MainActivity extends AppCompatActivity{
             TextView finishedText = findViewById(R.id.instructionTextViewWin);
             finishedText.setText("congratulations black wins");
             finishedScreen.setVisibility(View.VISIBLE);
+            findViewById(R.id.play_again).setOnClickListener((v) -> reset());
+            findViewById(R.id.return_home_win).setOnClickListener((v) -> quit());
         } else {
             ConstraintLayout finishedScreen = findViewById(R.id.loss_screen);
             TextView finishedText = findViewById(R.id.instructionTextViewLoss);
             finishedText.setText("congratulations white wins");
             finishedScreen.setVisibility(View.VISIBLE);
+            findViewById(R.id.try_again).setOnClickListener((v) -> reset());
+            findViewById(R.id.return_home_loss).setOnClickListener((v) -> quit());
         }
         findViewById(R.id.undo_button).setVisibility(View.INVISIBLE);
         findViewById(R.id.redo_button).setVisibility(View.INVISIBLE);
         findViewById(R.id.undo_button_text).setVisibility(View.INVISIBLE);
         findViewById(R.id.redo_button_text).setVisibility(View.INVISIBLE);
+    }
+
+    /**
+     *  quit the game
+     */
+    void quit() {
+        finish();
+        System.exit(0);
+    }
+
+    /**
+     *  restart the game
+     */
+    void reset() {
+        startMain();
     }
 
     /**
