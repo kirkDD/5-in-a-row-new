@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.util.Pair;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -66,9 +67,24 @@ public class MainActivity extends AppCompatActivity{
         setUpBoardView();
         // experiment
         setUpStangeView();
+        findViewById(R.id.play_again).setOnClickListener((v) -> reset());
         findViewById(R.id.undo_button).setOnClickListener((v) -> undo());
         findViewById(R.id.redo_button).setOnClickListener((v) -> redo());
         boardView.addGameCompletedListener(this::onGameCompleted);
+    }
+
+    /**
+     *  restart the game
+     */
+    void reset() {
+        System.out.println("herehere");
+        game.reset();
+        findViewById(R.id.undo_button).setVisibility(View.VISIBLE);
+        findViewById(R.id.redo_button).setVisibility(View.VISIBLE);
+        findViewById(R.id.undo_button_text).setVisibility(View.VISIBLE);
+        findViewById(R.id.redo_button_text).setVisibility(View.VISIBLE);
+        findViewById(R.id.win_screen).setVisibility(View.INVISIBLE);
+        boardView.invalidate();
     }
 
     void setUpBoardView() {
@@ -85,6 +101,7 @@ public class MainActivity extends AppCompatActivity{
 
     /**
      *  Called when the game is completed
+     * @param gameState : who wins : 1 -> black wins, -1 -> white wins, 2 -> draw
      */
     void onGameCompleted(int gameState) {
         setContentView(R.layout.activity_main);
