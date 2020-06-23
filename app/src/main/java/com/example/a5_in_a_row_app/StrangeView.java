@@ -53,6 +53,8 @@ public class StrangeView extends View {
         brush = new Paint();
         brush.setStyle(Paint.Style.FILL);
         brush.setStrokeWidth(5);
+        brush.setStrokeCap(Paint.Cap.ROUND);
+        brush.setAntiAlias(true);
         currAngles = new float[3];
         targetAngles = new float[3];
         new Thread(() -> {
@@ -82,7 +84,7 @@ public class StrangeView extends View {
 //        canvas.drawRect(0, 0, getWidth(), getHeight(), brush);
         // draw cube
         if (c == null) {
-            c = new Cube(Math.min(getWidth(), getHeight()) / 3f);
+            c = new Cube(Math.min(getWidth(), getHeight()) / 2f / (float) Math.sqrt(3) - brush.getStrokeWidth() / 2);
             c.rotate(1, 1, 1);
             cX = getWidth() / 2f;
             cY = getHeight() / 2f;

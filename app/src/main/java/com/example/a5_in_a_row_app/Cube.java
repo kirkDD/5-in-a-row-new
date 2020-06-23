@@ -13,6 +13,11 @@ public class Cube {
     float[] angle;
     float[][] R; // rotation matrix
 
+    //6 faces
+    Path[] faces;
+    int[] alphas;
+    boolean[] front;
+
     public Cube(float halfSize) {
         this.halfSize = halfSize;
         coors = new float[8][];
@@ -29,61 +34,85 @@ public class Cube {
 
         R = new float[3][3];
         newCoors = new float[8][3];
+        
+        faces = new Path[6];
+        alphas = new int[6];
+        front = new boolean[6];
+        for (int i = 0; i < faces.length; i++) {
+            faces[i] = new Path();
+            front[i] = true;
+        }
     }
 
     void draw(Canvas c, Paint p, float cX, float cY) {
         // draw 6 faces
         c.translate(cX,cY);
+        int faceColor = p.getColor();
+        // draw the behind ones
+        for (int i = 0; i < faces.length; i++) {
+            if (front[i]) continue;
+            p.setStyle(Paint.Style.STROKE);
+            p.setColor(faceColor / 2);
+            p.setAlpha(255);
+            c.drawPath(faces[i], p);
+            p.setStyle(Paint.Style.FILL);
+            p.setColor(faceColor);
+            p.setAlpha(alphas[i]);
+            c.drawPath(faces[i], p);
+        }
 
-
-        p.setStyle(Paint.Style.FILL);
-        c.drawPath(getQuadPath(newCoors[0], newCoors[1], newCoors[3], newCoors[2]), p);
-        c.drawPath(getQuadPath(newCoors[4], newCoors[5], newCoors[7], newCoors[6]), p);
-
-        c.drawPath(getQuadPath(newCoors[0], newCoors[1], newCoors[5], newCoors[4]), p);
-        c.drawPath(getQuadPath(newCoors[2], newCoors[3], newCoors[7], newCoors[6]), p);
-
-        c.drawPath(getQuadPath(newCoors[0], newCoors[2], newCoors[6], newCoors[4]), p);
-        c.drawPath(getQuadPath(newCoors[1], newCoors[3], newCoors[7], newCoors[5]), p);
-
-        p.setStyle(Paint.Style.STROKE);
-        p.setColor(p.getColor() / 2);
-        c.drawPath(getQuadPath(newCoors[0], newCoors[1], newCoors[3], newCoors[2]), p);
-        c.drawPath(getQuadPath(newCoors[4], newCoors[5], newCoors[7], newCoors[6]), p);
-
-        c.drawPath(getQuadPath(newCoors[0], newCoors[1], newCoors[5], newCoors[4]), p);
-        c.drawPath(getQuadPath(newCoors[2], newCoors[3], newCoors[7], newCoors[6]), p);
-
-        c.drawPath(getQuadPath(newCoors[0], newCoors[2], newCoors[6], newCoors[4]), p);
-        c.drawPath(getQuadPath(newCoors[1], newCoors[3], newCoors[7], newCoors[5]), p);
-
+        for (int i = 0; i < faces.length; i++) {
+            if (!front[i]) continue;
+            p.setStyle(Paint.Style.STROKE);
+            p.setColor(faceColor / 2);
+            p.setAlpha(255);
+            c.drawPath(faces[i], p);
+            p.setStyle(Paint.Style.FILL);
+            p.setColor(faceColor);
+            p.setAlpha(alphas[i]);
+            c.drawPath(faces[i], p);
+        }
         c.translate(-cX, -cY);
 
     }
 
     // return T iff this face is facing toward u
     boolean isFacingOut(float[] a, float[] b, float[] c, float[] d) {
-        // take the cross product?
-//        float bound = halfSize * (float) Math.sqrt(2);
-//        if (a[2] < - bound || b[2] < -bound || c[2] < -bound || d[2] < -bound) {
-//            return false;
-//        }
-        // the vector to center! genius!
+        // the vector to center of face! genius!
         return a[2] + b[2] + c[2] + d[2] > 0;
     }
 
+    void setPathAndAlpha() {
+        setOnePathNAlpha(newCoors[0], newCoors[1], newCoors[3], newCoors[2], 0);
+        setOnePathNAlpha(newCoors[4], newCoors[5], newCoors[7], newCoors[6], 1);
+        setOnePathNAlpha(newCoors[0], newCoors[1], newCoors[5], newCoors[4], 2);
+        setOnePathNAlpha(newCoors[2], newCoors[3], newCoors[7], newCoors[6], 3);
+        setOnePathNAlpha(newCoors[0], newCoors[2], newCoors[6], newCoors[4], 4);
+        setOnePathNAlpha(newCoors[1], newCoors[3], newCoors[7], newCoors[5], 5);
+    }
+
     // return a drawable Path
-    Path getQuadPath(float[] a, float[] b, float[] c, float[] d) {
-        Path path = new Path();
-        if (isFacingOut(a,b,c,d)) {
-            path.moveTo(a[0], a[1]);
-            path.lineTo(b[0], b[1]);
-            path.lineTo(c[0], c[1]);
-            path.lineTo(d[0], d[1]);
-            path.lineTo(a[0], a[1]);
-            path.close();
-        }
-        return path;
+    void setOnePathNAlpha(float[] a, float[] b, float[] c, float[] d, int index) {
+        // calculate and set the alpha of p
+        alphas[index] = areaOf(a, b, c, d);
+        Path path = faces[index];
+        path.reset();
+        front[index] = isFacingOut(a, b,c,d);
+        path.moveTo(a[0], a[1]);
+        path.lineTo(b[0], b[1]);
+        path.lineTo(c[0], c[1]);
+        path.lineTo(d[0], d[1]);
+        path.lineTo(a[0], a[1]);
+        path.close();
+    }
+
+    int areaOf(float[] a, float[] b, float[] c, float[] d) {
+        double circumference = Math.sqrt(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2));
+        circumference += Math.sqrt(Math.pow(b[0] - c[0], 2) + Math.pow(b[1] - c[1], 2));
+        circumference += Math.sqrt(Math.pow(c[0] - d[0], 2) + Math.pow(c[1] - d[1], 2));
+        circumference += Math.sqrt(Math.pow(d[0] - a[0], 2) + Math.pow(d[1] - a[1], 2));
+        circumference /= halfSize * 2;
+        return 255 - (int) map((float) circumference, 3, 4, 50, 200);
     }
 
     // rotate the cube by angles xyz
@@ -104,6 +133,7 @@ public class Cube {
         }
         // to R2
         // just dont use Z
+        setPathAndAlpha();
     }
 
     // set the angle
@@ -129,6 +159,11 @@ public class Cube {
         R[2][2] = (float) (Math.cos(angle[1]) * Math.cos(angle[2]));
     }
 
-
+    float map(float v, float vStart, float vEnd, float min, float max) {
+        v = Math.max(v, vStart);
+        v = Math.min(v, vEnd);
+        float delta = v - vStart;
+        return min + (max - min) * delta / (vEnd - vStart);
+    }
 
 }
