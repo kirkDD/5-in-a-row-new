@@ -74,9 +74,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
     void setUpBoardView() {
-        if (game == null) {
-            game = new FiveInARowGame(15);
-        }
+        game = new FiveInARowGame(15);
         boardView = new GameBoardView(this, game, history);
         LinearLayout ll = findViewById(R.id.game_board_area);
         ll.addView(boardView);
