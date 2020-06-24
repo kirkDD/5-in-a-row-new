@@ -269,4 +269,16 @@ public class FiveInARowGame {
         return this.turn;
     }
 
+
+    void setBoard(int[] bx, int[] by, int[] wx, int[] wy) {
+        hardReset();
+        for (int i = 0;; i++) {
+            // black go first
+            if (i > bx.length - 1) return;
+            makeMove(bx[i], by[i], nextPlayer());
+            if (i > wx.length - 1) return;
+            makeMove(wx[i], wy[i], nextPlayer());
+        }
+    }
+
 }

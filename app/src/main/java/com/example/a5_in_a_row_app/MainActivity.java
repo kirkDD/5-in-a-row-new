@@ -1,21 +1,17 @@
 package com.example.a5_in_a_row_app;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
-import android.animation.ValueAnimator;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.util.Pair;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -26,7 +22,14 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        history = new StackHistory();
+        System.out.println("create");
+        if (savedInstanceState != null) {
+            // configuration changed instead of new activity
+            startMain();
+            game.setBoard(savedInstanceState.getIntArray("BX"), savedInstanceState.getIntArray("BY"),
+                    savedInstanceState.getIntArray("WX"), savedInstanceState.getIntArray("WY"));
+            return;
+        }
         playSplashScreen();
     }
 
@@ -55,14 +58,12 @@ public class MainActivity extends AppCompatActivity{
     void playSplashScreen() {
         View v = new SplashScreenView(this);
         setContentView(v);
-        v.setOnClickListener(view -> {
-            startMain();
-        });
+        v.setOnClickListener(view -> startMain());
     }
 
 
     void startMain() {
-        history.clear();
+        history = new StackHistory();
         setContentView(R.layout.activity_main);
         setUpBoardView();
         // experiment
@@ -73,7 +74,9 @@ public class MainActivity extends AppCompatActivity{
     }
 
     void setUpBoardView() {
-        game = new FiveInARowGame(15);
+        if (game == null) {
+            game = new FiveInARowGame(15);
+        }
         boardView = new GameBoardView(this, game, history);
         LinearLayout ll = findViewById(R.id.game_board_area);
         ll.addView(boardView);
@@ -127,12 +130,53 @@ public class MainActivity extends AppCompatActivity{
         startMain();
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        System.out.println("config?");
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        System.out.println("restore? Too late");
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        System.out.println("save");
+        // best it can do is to save some array primitives
+        if (game == null) return;
+        Map<Integer, List<int[]>> map = game.getBoardAsList();
+        int[] black_x = new int[map.get(FiveInARowGame.BLACK).size()];
+        int[] black_y = new int[map.get(FiveInARowGame.BLACK).size()];
+        int[] white_x = new int[map.get(FiveInARowGame.WHITE).size()];
+        int[] white_y = new int[map.get(FiveInARowGame.WHITE).size()];
+        for (int i = 0; i < map.get(FiveInARowGame.BLACK).size(); i++) {
+            black_x[i] = map.get(FiveInARowGame.BLACK).get(i)[0];
+            black_y[i] = map.get(FiveInARowGame.BLACK).get(i)[1];
+        }
+        for (int i = 0; i < map.get(FiveInARowGame.WHITE).size(); i++) {
+            white_x[i] = map.get(FiveInARowGame.WHITE).get(i)[0];
+            white_y[i] = map.get(FiveInARowGame.WHITE).get(i)[1];
+        }
+        outState.putIntArray("BX", black_x);
+        outState.putIntArray("BY", black_y);
+        outState.putIntArray("WX", white_x);
+        outState.putIntArray("WY", white_y);
+        System.out.println("saved " + white_x.length);
+    }
+
     /**
      * Called before the activity is destroyed.
      */
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        boardView.removeGameCompletedListener(this::onGameCompleted);
+        if (boardView != null) {
+            boardView.removeGameCompletedListener(this::onGameCompleted);
+            System.out.println("destroying");
+        }
     }
 }

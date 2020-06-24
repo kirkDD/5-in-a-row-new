@@ -146,6 +146,7 @@ public class GameBoardView extends View {
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("haha Y?");
+            // the if check some how throw this
         }
     }
 
