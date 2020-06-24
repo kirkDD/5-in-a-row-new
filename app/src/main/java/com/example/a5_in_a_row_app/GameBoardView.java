@@ -3,8 +3,10 @@ package com.example.a5_in_a_row_app;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.util.Pair;
 import android.view.MotionEvent;
@@ -29,6 +31,9 @@ public class GameBoardView extends View {
 
     Drawable BLACK_PNG;
     Drawable WHITE_PNG;
+
+    LinearGradient gradient = new LinearGradient(0, 0, 100, 100, Color.RED
+            , Color.BLUE, Shader.TileMode.MIRROR);
 
     // the current state of the board(selecting or not)
     State state;
@@ -116,6 +121,7 @@ public class GameBoardView extends View {
         }
     }
 
+    float delta = 0;
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -131,6 +137,19 @@ public class GameBoardView extends View {
         brush.setStyle(Paint.Style.STROKE);
         brush.setColor(Color.BLACK);
         canvas.drawRect(0, 0, size, size, brush);
+        brush.setShader(gradient);
+        if (game.nextPlayer() == FiveInARowGame.BLACK && delta < 1000) {
+            postInvalidate();
+            delta += 80;
+            gradient = new LinearGradient(0 + delta, 0 + delta, 400 + delta, 400 + delta,
+                    Color.BLACK, Color.WHITE, Shader.TileMode.CLAMP);
+        } else if (game.nextPlayer() == FiveInARowGame.WHITE && delta > -200) {
+            postInvalidate();
+            delta -= 80;
+            gradient = new LinearGradient(0 + delta, 0 + delta, 400 + delta, 400 + delta,
+                    Color.BLACK, Color.WHITE, Shader.TileMode.CLAMP);
+        }
+//        brush.setStyle(Paint.Style.STROKE);
         for (int i = 0; i < numTileOneSide; i++) {
             for (int j = 0; j < numTileOneSide; j++) {
                 float x = i * tileSize;
@@ -139,6 +158,7 @@ public class GameBoardView extends View {
                 drawPiece(canvas, x, y, board[i][j]);
             }
         }
+        brush.setShader(null);
         // draw the piece that is being put
         try {
             if (location != null && board[location.first][location.second] == FiveInARowGame.EMPTY) {
