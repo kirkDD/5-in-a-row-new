@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     tools:context=".MainActivity">
+
 
     <LinearLayout
         android:id="@+id/game_board_area"
@@ -22,66 +19,77 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/strange_view"
-        android:orientation="horizontal"
-        android:layout_width="68dp"
-        android:layout_height="68dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/win_screen"
-        android:layout_marginRight="@dimen/button_text_size"
-        android:layout_marginBottom="@dimen/button_text_size"
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_margin="50dp"
         >
-    </LinearLayout>
 
-    <ImageButton
-        android:id="@+id/undo_button"
-        android:layout_width="50dp"
-        android:layout_height="35dp"
-        android:layout_weight="1"
-        android:background="@drawable/undo"
-        android:contentDescription="@string/undo_desc"
-        android:layout_marginTop="10dp"
-        android:visibility="visible"
-        app:layout_constraintTop_toBottomOf="@id/game_board_area"
-        app:layout_constraintLeft_toLeftOf="parent"
-        />
+        <ImageButton
+            android:id="@+id/undo_button"
+            android:layout_width="50dp"
+            android:layout_height="35dp"
+            android:layout_weight="1"
+            android:background="@drawable/undo"
+            android:contentDescription="@string/undo_desc"
+            android:layout_marginTop="10dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@id/undo_button_text"
+            app:layout_constraintLeft_toLeftOf="parent"
+            />
 
-    <TextView
-        android:id="@+id/undo_button_text"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|center"
-        android:text="@string/undo_label"
-        android:textAlignment="center"
-        android:visibility="visible"
-        android:textColor="@android:color/holo_blue_bright"
-        app:layout_constraintTop_toBottomOf="@+id/undo_button"
-        app:layout_constraintStart_toStartOf="parent"/>
+        <TextView
+            android:id="@+id/undo_button_text"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center"
+            android:text="@string/undo_label"
+            android:textAlignment="center"
+            android:visibility="visible"
+            android:textColor="@android:color/holo_blue_bright"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
 
-    <ImageButton
-        android:id="@+id/redo_button"
-        android:layout_width="50dp"
-        android:layout_height="35dp"
-        android:layout_weight="1"
-        android:background="@drawable/redo"
-        android:contentDescription="@string/redo_desc"
-        android:layout_marginTop="10dp"
-        android:visibility="visible"
-        app:layout_constraintTop_toBottomOf="@id/game_board_area"
-        app:layout_constraintRight_toRightOf="parent" />
+        <ImageButton
+            android:id="@+id/redo_button"
+            android:layout_width="50dp"
+            android:layout_height="35dp"
+            android:layout_weight="1"
+            android:background="@drawable/redo"
+            android:contentDescription="@string/redo_desc"
+            android:layout_marginTop="10dp"
+            android:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@id/redo_button_text"
+            app:layout_constraintRight_toRightOf="parent" />
 
-    <TextView
-        android:id="@+id/redo_button_text"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|center"
-        android:text="@string/redo_label"
-        android:textAlignment="center"
-        android:visibility="visible"
-        android:textColor="@android:color/holo_blue_bright"
-        app:layout_constraintTop_toBottomOf="@+id/redo_button"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        <TextView
+            android:id="@+id/redo_button_text"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center"
+            android:text="@string/redo_label"
+            android:textAlignment="center"
+            android:visibility="visible"
+            android:textColor="@android:color/holo_blue_bright"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <LinearLayout
+            android:id="@+id/strange_view"
+            android:orientation="horizontal"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            >
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/win_screen"
@@ -197,4 +205,3 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
