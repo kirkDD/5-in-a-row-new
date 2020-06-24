@@ -11,6 +11,10 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 public class StrangeView extends View {
 
     Paint brush;
@@ -18,7 +22,8 @@ public class StrangeView extends View {
     float[] colors;
 
     // test
-    Cube c;
+    PointCloud c;
+    Cube cube;
     float size;
     float cX;
     float cY;
@@ -69,6 +74,10 @@ public class StrangeView extends View {
                         c.setAngle(currAngles[0], currAngles[1], currAngles[2]);
                         this.post(this::invalidate);
                     }
+                    if (cube != null) {
+                        cube.setAngle(currAngles[0], currAngles[1], currAngles[2]);
+                        this.post(this::invalidate);
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -79,18 +88,20 @@ public class StrangeView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        // draw background
-        brush.setColor(Color.rgb((int) colors[0], (int) colors[1], (int) colors[2]));
-//        canvas.drawRect(0, 0, getWidth(), getHeight(), brush);
-        // draw cube
+        // draw cubes
         if (c == null) {
-            c = new Cube(Math.min(getWidth(), getHeight()) / 2f / (float) Math.sqrt(3) - brush.getStrokeWidth() / 2);
-            c.rotate(1, 1, 1);
-            cX = getWidth() / 2f;
-            cY = getHeight() / 2f;
+            c = new PointCloud(20, Math.min(getWidth(), getHeight()) / 2f, 5);
         }
+        if (cube == null) {
+            cube = new Cube(Math.min(getWidth(), getHeight()) / 2f / (float) Math.sqrt(3) - brush.getStrokeWidth() / 2);
+        }
+        cX = getWidth() / 2f;
+        cY = getHeight() / 2f;
+        brush.setColor(Color.rgb((int) colors[0], (int) colors[1], (int) colors[2]));
+        cube.draw(canvas, brush, cX, cY);
+        brush.setColor(brush.getColor() / 2);
+        brush.setAlpha(255);
         c.draw(canvas, brush, cX, cY);
-
     }
 
     float map(float v, float vStart, float vEnd, float min, float max) {
@@ -99,5 +110,6 @@ public class StrangeView extends View {
         float delta = v - vStart;
         return min + (max - min) * delta / (vEnd - vStart);
     }
+
 }
 

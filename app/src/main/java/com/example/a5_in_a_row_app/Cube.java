@@ -1,7 +1,6 @@
 package com.example.a5_in_a_row_app;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 
@@ -98,6 +97,11 @@ public class Cube {
         Path path = faces[index];
         path.reset();
         front[index] = isFacingOut(a, b,c,d);
+        if (!front[index]) {
+            alphas[index] = Math.min(255, alphas[index] + 10);
+        } else {
+            alphas[index] = Math.max(0, alphas[index] - 10);
+        }
         path.moveTo(a[0], a[1]);
         path.lineTo(b[0], b[1]);
         path.lineTo(c[0], c[1]);
@@ -106,6 +110,7 @@ public class Cube {
         path.close();
     }
 
+    // return a good alpha
     int areaOf(float[] a, float[] b, float[] c, float[] d) {
         double circumference = Math.sqrt(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2));
         circumference += Math.sqrt(Math.pow(b[0] - c[0], 2) + Math.pow(b[1] - c[1], 2));
@@ -129,6 +134,14 @@ public class Cube {
         for (int i = 0; i < coors.length; i++) {
             for (int j = 0; j < coors[i].length; j++) {
                 newCoors[i][j] = coors[i][0] * R[j][0] + coors[i][1] * R[j][1] + coors[i][2] * R[j][2];
+            }
+            // add perspective
+            float scale = map(Math.abs(newCoors[i][2]), 0, (float) (halfSize * Math.sqrt(3)), 1, 1.5f);
+            if (newCoors[i][2] < 0) {
+                scale = 2f - scale;
+            }
+            for (int j = 0; j < 2; j++) {
+                newCoors[i][j] *= scale;
             }
         }
         // to R2
