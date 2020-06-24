@@ -1,6 +1,5 @@
 package com.example.a5_in_a_row_app;
 
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -11,42 +10,43 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.view.View;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 public class StrangeView extends View {
 
     Paint brush;
-    float[] accelerations;
     float[] colors;
 
     // test
     PointCloud c;
     Cube cube;
-    float size;
     float cX;
     float cY;
-
-    // for cube
-    float[] currAngles;
-    float[] targetAngles;
 
     // animate a percentage
     public StrangeView(Context context) {
         super(context);
         colors = new float[3];
+
         SensorManager sm = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         final Sensor acceleration = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sm.registerListener(new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
-                accelerations = sensorEvent.values;
+                float[] accelerations = sensorEvent.values;
+                float[] targetAngles = new float[3];
+                int[] colors = new int[3];
                 for (int i = 0; i < accelerations.length; i++) {
-                    colors[i] = map(accelerations[i], -10, 10, 0, 255);
+                    colors[i] = (int) map(accelerations[i], -10, 10, 0, 255);
                     if (c != null) {
                         targetAngles[i] = map(accelerations[i], -10, 10, (float) (-Math.PI), (float) (Math.PI));
                     }
+
+                }
+                brush.setColor(Color.rgb(colors[0], (int) colors[1], (int) colors[2]));
+                if (cube != null) {
+                    cube.setTargetAngle(targetAngles[0], targetAngles[1], targetAngles[2]);
+                }
+                if (c != null) {
+                    c.setTargetAngle(targetAngles[0], targetAngles[1], targetAngles[2]);
                 }
             }
 
@@ -55,53 +55,38 @@ public class StrangeView extends View {
 
             }
         }, acceleration, SensorManager.SENSOR_DELAY_NORMAL);
+
         brush = new Paint();
         brush.setStyle(Paint.Style.FILL);
         brush.setStrokeWidth(5);
         brush.setStrokeCap(Paint.Cap.ROUND);
         brush.setAntiAlias(true);
-        currAngles = new float[3];
-        targetAngles = new float[3];
-        new Thread(() -> {
-            while (true) {
-                try {
-                    // FPS
-                    Thread.sleep(30);
-                    for (int i = 0; i < currAngles.length; i++) {
-                        currAngles[i] += (targetAngles[i] - currAngles[i]) * 0.1;
-                    }
-                    if (c != null) {
-                        c.setAngle(currAngles[0], currAngles[1], currAngles[2]);
-                        this.post(this::invalidate);
-                    }
-                    if (cube != null) {
-                        cube.setAngle(currAngles[0], currAngles[1], currAngles[2]);
-                        this.post(this::invalidate);
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
     }
 
 
     @Override
     protected void onDraw(Canvas canvas) {
         // draw cubes
+        if (cX == 0 || c == null || cube == null) initDims();
+        int temp_color = brush.getColor();
+        cube.draw(canvas, brush, cX, cY);
+        brush.setColor(temp_color / 2);
+        brush.setAlpha(255);
+        c.draw(canvas, brush, cX, cY);
+        brush.setColor(temp_color);
+    }
+
+    void initDims() {
+        cX = getWidth() / 2f;
+        cY = getHeight() / 2f;
         if (c == null) {
             c = new PointCloud(20, Math.min(getWidth(), getHeight()) / 2f, 5);
+            c.setRunnable(this::postInvalidate);
         }
         if (cube == null) {
             cube = new Cube(Math.min(getWidth(), getHeight()) / 2f / (float) Math.sqrt(3) - brush.getStrokeWidth() / 2);
+            cube.setRunnable(this::postInvalidate);
         }
-        cX = getWidth() / 2f;
-        cY = getHeight() / 2f;
-        brush.setColor(Color.rgb((int) colors[0], (int) colors[1], (int) colors[2]));
-        cube.draw(canvas, brush, cX, cY);
-        brush.setColor(brush.getColor() / 2);
-        brush.setAlpha(255);
-        c.draw(canvas, brush, cX, cY);
     }
 
     float map(float v, float vStart, float vEnd, float min, float max) {

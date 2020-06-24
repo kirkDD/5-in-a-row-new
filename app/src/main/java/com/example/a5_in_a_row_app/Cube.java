@@ -1,6 +1,7 @@
 package com.example.a5_in_a_row_app;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 
@@ -10,12 +11,19 @@ public class Cube {
     float[][] coors;
     float[][] newCoors;
     float[] angle;
+    float[] target_angle;
     float[][] R; // rotation matrix
 
     //6 faces
     Path[] faces;
     int[] alphas;
     boolean[] front;
+
+    Runnable postInvalidate;
+
+    void setRunnable(Runnable r) {
+        postInvalidate = r;
+    }
 
     public Cube(float halfSize) {
         this.halfSize = halfSize;
@@ -30,6 +38,7 @@ public class Cube {
         coors[7] = new float[]{-halfSize, -halfSize, -halfSize};
 
         angle = new float[]{0f, 0f, 0f};
+        target_angle = new float[]{0f, 0f, 0f};
 
         R = new float[3][3];
         newCoors = new float[8][3];
@@ -46,7 +55,8 @@ public class Cube {
     void draw(Canvas c, Paint p, float cX, float cY) {
         // draw 6 faces
         c.translate(cX,cY);
-        int faceColor = p.getColor();
+//        int faceColor = p.getColor();
+        int faceColor = Color.RED;
         // draw the behind ones
         for (int i = 0; i < faces.length; i++) {
             if (front[i]) continue;
@@ -72,7 +82,9 @@ public class Cube {
             c.drawPath(faces[i], p);
         }
         c.translate(-cX, -cY);
-
+        if (evolveCurrentAngle() && postInvalidate != null) {
+            postInvalidate.run();
+        }
     }
 
     // return T iff this face is facing toward u
@@ -122,11 +134,55 @@ public class Cube {
 
     // rotate the cube by angles xyz
     void rotate(float x, float y, float z) {
-        angle[0] += x;
-        angle[1] += y;
-        angle[2] += z;
+        target_angle[0] += x;
+        target_angle[1] += y;
+        target_angle[2] += z;
+        postSetAngle();
+    }
+
+    void setTargetAngle(float x, float y, float z) {
+        target_angle[0] = x;
+        target_angle[1] = y;
+        target_angle[2] = z;
+        if (evolveCurrentAngle()) {
+            postSetAngle();
+            postInvalidate.run();
+        }
+    }
+
+    boolean evolveCurrentAngle() {
+        float checkSum = 0;
+        for (int i = 0; i < target_angle.length; i++) {
+            checkSum += Math.abs(target_angle[i] - angle[i]);
+            angle[i] += (target_angle[i] - angle[i]) * 0.1f;
+        }
+        if (checkSum < 0.0001) {
+            for (int i = 0; i < target_angle.length; i++) {
+                angle[i] = target_angle[i];
+            }
+            return false;
+        }
+//        System.out.println("returning true in evolve");
+        return true;
+    }
+
+
+    void postSetAngle() {
         calculateRotationMatrix();
         applyRotationMatrix();
+    }
+
+    // calculate current R matrix from current angle
+    void calculateRotationMatrix() {
+        R[0][0] = (float) (Math.cos(angle[0]) * Math.cos(angle[1]));
+        R[1][0] = (float) (Math.sin(angle[0]) * Math.cos(angle[1]));
+        R[0][1] = (float) (Math.cos(angle[0]) * Math.sin(angle[1]) * Math.sin(angle[2]) - Math.sin(angle[0]) * Math.cos(angle[2]));
+        R[1][1] = (float) (Math.sin(angle[0]) * Math.sin(angle[1]) * Math.sin(angle[2]) + Math.cos(angle[0]) * Math.cos(angle[2]));
+        R[0][2] = (float) (Math.cos(angle[0]) * Math.sin(angle[1]) * Math.cos(angle[2]) + Math.sin(angle[0]) * Math.sin(angle[2]));
+        R[1][2] = (float) (Math.sin(angle[0]) * Math.sin(angle[1]) * Math.cos(angle[2]) - Math.cos(angle[0]) * Math.sin(angle[2]));
+        R[2][0] = (float) - Math.sin(angle[1]);
+        R[2][1] = (float) (Math.cos(angle[1]) * Math.sin(angle[2]));
+        R[2][2] = (float) (Math.cos(angle[1]) * Math.cos(angle[2]));
     }
 
     // helper to calculate rotated coordinates
@@ -149,28 +205,6 @@ public class Cube {
         setPathAndAlpha();
     }
 
-    // set the angle
-    void setAngle(float x, float y, float z) {
-        angle[0] = x;
-        angle[1] = y;
-        angle[2] = z;
-        calculateRotationMatrix();
-        applyRotationMatrix();
-
-    }
-
-    // calculate current R matrix from current angle
-    void calculateRotationMatrix() {
-        R[0][0] = (float) (Math.cos(angle[0]) * Math.cos(angle[1]));
-        R[1][0] = (float) (Math.sin(angle[0]) * Math.cos(angle[1]));
-        R[0][1] = (float) (Math.cos(angle[0]) * Math.sin(angle[1]) * Math.sin(angle[2]) - Math.sin(angle[0]) * Math.cos(angle[2]));
-        R[1][1] = (float) (Math.sin(angle[0]) * Math.sin(angle[1]) * Math.sin(angle[2]) + Math.cos(angle[0]) * Math.cos(angle[2]));
-        R[0][2] = (float) (Math.cos(angle[0]) * Math.sin(angle[1]) * Math.cos(angle[2]) + Math.sin(angle[0]) * Math.sin(angle[2]));
-        R[1][2] = (float) (Math.sin(angle[0]) * Math.sin(angle[1]) * Math.cos(angle[2]) - Math.cos(angle[0]) * Math.sin(angle[2]));
-        R[2][0] = (float) - Math.sin(angle[1]);
-        R[2][1] = (float) (Math.cos(angle[1]) * Math.sin(angle[2]));
-        R[2][2] = (float) (Math.cos(angle[1]) * Math.cos(angle[2]));
-    }
 
     float map(float v, float vStart, float vEnd, float min, float max) {
         v = Math.max(v, vStart);

@@ -9,6 +9,7 @@ import java.util.Random;
 
 public class PointCloud {
 
+    float[] target_angle;
     float[] angle; // current angle
     float[][] R; // rotation matrix
 
@@ -17,6 +18,12 @@ public class PointCloud {
 
     float pointRadius;
     float maxDist;
+
+    Runnable postInvalidate;
+
+    void setRunnable(Runnable r) {
+        postInvalidate = r;
+    }
 
     /**
      * manage a list of points in 3D
@@ -27,6 +34,7 @@ public class PointCloud {
         pointRadius = point_size;
         R = new float[3][3];
         angle = new float[3];
+        target_angle = new float[3];
         points = point_list;
         newPoints = new ArrayList<>();
         maxDist = 0;
@@ -64,13 +72,44 @@ public class PointCloud {
                             map(Math.abs(pt[2]), 0, maxDist, 1, 2), p);
         }
         c.translate(-cX, -cY);
+        if (evolveCurrentAngle() && postInvalidate != null) {
+            postInvalidate.run();
+        }
     }
 
     // rotate the cube by angles xyz
     void rotate(float x, float y, float z) {
-        angle[0] += x;
-        angle[1] += y;
-        angle[2] += z;
+        target_angle[0] += x;
+        target_angle[1] += y;
+        target_angle[2] += z;
+        postSetAngle();
+    }
+
+    // set the angle
+    void setTargetAngle(float x, float y, float z) {
+        target_angle[0] = x;
+        target_angle[1] = y;
+        target_angle[2] = z;
+        if (evolveCurrentAngle()) postSetAngle();
+    }
+    boolean evolveCurrentAngle() {
+        float checkSum = 0;
+        for (int i = 0; i < target_angle.length; i++) {
+            checkSum += Math.abs(target_angle[i] - angle[i]);
+            angle[i] += (target_angle[i] - angle[i]) * 0.1f;
+        }
+        if (checkSum < 0.0001) {
+            for (int i = 0; i < target_angle.length; i++) {
+                angle[i] = target_angle[i];
+            }
+            return false;
+        }
+        return true;
+    }
+
+
+
+    void postSetAngle() {
         calculateRotationMatrix();
         applyRotationMatrix();
     }
@@ -86,16 +125,6 @@ public class PointCloud {
         }
         // to R2
         // just dont use Z
-    }
-
-    // set the angle
-    void setAngle(float x, float y, float z) {
-        angle[0] = x;
-        angle[1] = y;
-        angle[2] = z;
-        calculateRotationMatrix();
-        applyRotationMatrix();
-
     }
 
     // calculate current R matrix from current angle
