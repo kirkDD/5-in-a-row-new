@@ -145,24 +145,55 @@ public class Cube {
         target_angle[1] = y;
         target_angle[2] = z;
         if (evolveCurrentAngle()) {
+            System.out.println("updating x to " + x);
             postSetAngle();
             postInvalidate.run();
         }
     }
 
     boolean evolveCurrentAngle() {
+        System.out.println("angles to " + target_angle[0] + ", " + target_angle[1]
+        + ", " + target_angle[2]);
+        // - PI and PI are connected
+        // - PI and PI are connected
+        // - PI/2 and PI/2 are connected
         float checkSum = 0;
-        for (int i = 0; i < target_angle.length; i++) {
-            checkSum += Math.abs(target_angle[i] - angle[i]);
-            angle[i] += (target_angle[i] - angle[i]) * 0.1f;
+        for (int i = 0; i < 2; i++) {
+            float delta = target_angle[i] - angle[i];
+            float sign = 1;
+            if (Math.abs(delta) > Math.PI) {
+                // go the other way
+                boolean isPos = delta > 0;
+                sign = -1;
+                delta = (float) (2 * Math.PI - Math.abs(delta));
+                if (!isPos) delta = -delta;
+            }
+            angle[i] += sign * 0.1f * delta;
+            if (angle[i] > Math.PI) angle[i] = (float) -(2 * Math.PI - angle[i]);
+            if (angle[i] < -Math.PI) angle[i] = (float) (2 * Math.PI - angle[i]);
+            checkSum += Math.abs(delta);
         }
+
+        float delta = target_angle[2] - angle[2];
+        float sign = 1;
+        if (Math.abs(delta) > Math.PI / 2) {
+            // go the other way
+            boolean isPos = delta > 0;
+            sign = -1;
+            delta = (float) (Math.PI - Math.abs(delta));
+            if (!isPos) delta = -delta;
+        }
+        angle[2] += sign * 0.1f * delta;
+        if (angle[2] > Math.PI / 2) angle[2] = (float) -(Math.PI - angle[2]);
+        if (angle[2] < -Math.PI / 2) angle[2] = (float) (Math.PI - angle[2]);
+        checkSum += Math.abs(delta);
+
         if (checkSum < 0.0001) {
             for (int i = 0; i < target_angle.length; i++) {
                 angle[i] = target_angle[i];
             }
             return false;
         }
-//        System.out.println("returning true in evolve");
         return true;
     }
 

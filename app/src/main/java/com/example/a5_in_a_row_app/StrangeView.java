@@ -21,32 +21,28 @@ public class StrangeView extends View {
     float cX;
     float cY;
 
+    // better orientation
+    float[] acc = new float[3];
+    float[] mag = new float[3];
+
+    float[] rotationMatrix = new float[9];
+    float[] mOrientationAngles = new float[3];
+
     // animate a percentage
     public StrangeView(Context context) {
         super(context);
         colors = new float[3];
-
         SensorManager sm = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         final Sensor acceleration = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        final Sensor magnetThing = sm.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        // did not un-register from window
         sm.registerListener(new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
-                float[] accelerations = sensorEvent.values;
-                float[] targetAngles = new float[3];
-                int[] colors = new int[3];
-                for (int i = 0; i < accelerations.length; i++) {
-                    colors[i] = (int) map(accelerations[i], -10, 10, 0, 255);
-                    if (c != null) {
-                        targetAngles[i] = map(accelerations[i], -10, 10, (float) (-Math.PI), (float) (Math.PI));
+                if (sensorEvent.values != null && sensorEvent.values.length == 3) {
+                    for (int i = 0; i < 3; i++) {
+                        acc[i] = sensorEvent.values[i];
                     }
-
-                }
-                brush.setColor(Color.rgb(colors[0], (int) colors[1], (int) colors[2]));
-                if (cube != null) {
-                    cube.setTargetAngle(targetAngles[0], targetAngles[1], targetAngles[2]);
-                }
-                if (c != null) {
-                    c.setTargetAngle(targetAngles[0], targetAngles[1], targetAngles[2]);
                 }
             }
 
@@ -55,12 +51,51 @@ public class StrangeView extends View {
 
             }
         }, acceleration, SensorManager.SENSOR_DELAY_NORMAL);
+        sm.registerListener(new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent sensorEvent) {
+                if (sensorEvent.values != null && sensorEvent.values.length == 3) {
+                    for (int i = 0; i < 3; i++) {
+                        mag[i] = sensorEvent.values[i];
+                    }
+                }
+            }
 
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int i) {
+
+            }
+        }, magnetThing,SensorManager.SENSOR_DELAY_NORMAL);
         brush = new Paint();
         brush.setStyle(Paint.Style.FILL);
         brush.setStrokeWidth(5);
         brush.setStrokeCap(Paint.Cap.ROUND);
         brush.setAntiAlias(true);
+
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(20);
+                    // set color
+                    int[] colors = new int[3];
+                    for (int i = 0; i < acc.length; i++) {
+                        colors[i] = (int) map(acc[i], -10, 10, 0, 255);
+                    }
+                    brush.setColor(Color.rgb(colors[0], (int) colors[1], (int) colors[2]));
+                    // set angle
+                    SensorManager.getRotationMatrix(rotationMatrix,null, acc, mag);
+                    SensorManager.getOrientation(rotationMatrix, mOrientationAngles);
+                    if (cube != null) {
+                        cube.setTargetAngle(mOrientationAngles[0], mOrientationAngles[1], mOrientationAngles[2]);
+                    }
+                    if (c != null) {
+                        c.setTargetAngle(mOrientationAngles[0], mOrientationAngles[1], mOrientationAngles[2]);
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
 

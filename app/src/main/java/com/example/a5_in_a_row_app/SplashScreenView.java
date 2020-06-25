@@ -128,7 +128,7 @@ public class SplashScreenView extends View {
         W = getWidth();
         float size = Math.min(W, H) / 4;
         black.setBounds((int) (-size * 1.5), (int) (-size / 2), (int) (-size * 0.5), (int) (size / 2));
-        white.setBounds((int) (size * 1.5), (int) (-size / 2), (int) (size * 0.5), (int) (size / 2));
+        white.setBounds((int) (size * 0.5), (int) (-size / 2), (int) (size * 1.5), (int) (size / 2));
     }
 
     int blinkCounter = 0;
