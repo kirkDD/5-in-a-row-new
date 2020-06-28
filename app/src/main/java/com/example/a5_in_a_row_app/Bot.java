@@ -2,6 +2,8 @@ package com.example.a5_in_a_row_app;
 
 import android.graphics.Point;
 
+import java.io.File;
+
 public abstract class Bot {
 
     int MY_ID;
@@ -16,4 +18,9 @@ public abstract class Bot {
     String trashTalk(int[][] game) {
         return "wat?";
     }
+
+    abstract String whatIsUrFileName();
+
+    abstract void loadTrainedModelFromFile(File f);
+
 }

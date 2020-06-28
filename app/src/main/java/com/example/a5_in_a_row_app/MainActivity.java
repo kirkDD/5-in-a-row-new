@@ -10,10 +10,16 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity{
+
+    String BOT_STORAGE = "BotStorage";
 
     GameBoardView boardView;
     FiveInARowGame game;
@@ -77,7 +83,9 @@ public class MainActivity extends AppCompatActivity{
     void setUpBoardView() {
         // construct bot
         human = new DumbBot(FiveInARowGame.WHITE);
-
+        File f = new File(getExternalFilesDir(BOT_STORAGE), human.whatIsUrFileName());
+        if (f.exists()) human.loadTrainedModelFromFile(f);
+        // game board and its view
         game = new FiveInARowGame(15);
         boardView = new GameBoardView(this, game, history, human);
         LinearLayout ll = findViewById(R.id.game_board_area);
@@ -180,5 +188,19 @@ public class MainActivity extends AppCompatActivity{
             boardView.removeGameCompletedListener(this::onGameCompleted);
             System.out.println("destroying");
         }
+        if (human != null) {
+            // save progress
+            File f = new File(getExternalFilesDir(BOT_STORAGE), human.whatIsUrFileName());
+            try {
+                FileOutputStream out = new FileOutputStream(f);
+                out.write(human.toString().getBytes());
+                out.flush();
+                out.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
+
+
 }

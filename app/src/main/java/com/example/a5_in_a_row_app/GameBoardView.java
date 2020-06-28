@@ -134,7 +134,7 @@ public class GameBoardView extends View {
                         e.printStackTrace();
                     }
                     while (!registerMove(bot.makeMove(game.getBoard()))) {
-                        // what?
+                        System.out.println("bot is crazy");
                     }
                     botThinking = false;
                     postInvalidate();
@@ -152,7 +152,7 @@ public class GameBoardView extends View {
             if (game.makeMove(p.x, p.y, game.nextPlayer()).equals("good")) {
                 history.addAction(Pair.create(p.x, p.y));
                 lastMove = new Pair<>(p.x, p.y);
-                lastMoveTimer = 150;
+                lastMoveTimer = 200;
             } else {
                 return false;
             }
@@ -175,38 +175,38 @@ public class GameBoardView extends View {
         // center it horizontally
         canvas.translate((getWidth() - size) / 2f, 0);
         int[][] board = game.getBoard();
-        brush.setStyle(Paint.Style.FILL);
-        brush.setColor(Color.GRAY);
-        canvas.drawRect(0, 0, size, size, brush);
-        brush.setStyle(Paint.Style.STROKE);
-        brush.setColor(Color.BLACK);
-        canvas.drawRect(0, 0, size, size, brush);
+
         brush.setShader(gradient);
+        brush.setStyle(Paint.Style.FILL);
+        canvas.drawRect(0, 0, size, size, brush);
+
         if (game.nextPlayer() == FiveInARowGame.BLACK && delta < 1000) {
             postInvalidate();
             delta += 100;
             gradient = new LinearGradient(0 + delta, 0 + delta, 400 + delta, 400 + delta,
                     Color.BLACK, Color.WHITE, Shader.TileMode.CLAMP);
-        } else if (game.nextPlayer() == FiveInARowGame.WHITE && delta > -200) {
+        } else if (game.nextPlayer() == FiveInARowGame.WHITE && delta > -400) {
             postInvalidate();
             delta -= 100;
             gradient = new LinearGradient(0 + delta, 0 + delta, 400 + delta, 400 + delta,
                     Color.BLACK, Color.WHITE, Shader.TileMode.CLAMP);
         }
-//        brush.setStyle(Paint.Style.STROKE);
+        brush.setShader(null);
+
+        brush.setColor(Color.GRAY);
+        brush.setStyle(Paint.Style.FILL);
         for (int i = 0; i < numTileOneSide; i++) {
             for (int j = 0; j < numTileOneSide; j++) {
                 float x = i * tileSize;
                 float y = j * tileSize;
-                canvas.drawRect(x, y, x + tileSize, y + tileSize, brush);
+                canvas.drawRect(x + 2, y + 2, x + tileSize - 2, y + tileSize - 2, brush);
                 drawPiece(canvas, x, y, board[i][j]);
             }
         }
-        brush.setShader(null);
         // draw the piece that is being put
         try {
             if (location != null && board[location.first][location.second] == FiveInARowGame.EMPTY) {
-                drawPiece(canvas, (float) (location.first * tileSize), (float) (location.second * tileSize), game.nextPlayer());
+                drawPiece(canvas, location.first * tileSize, (location.second * tileSize), game.nextPlayer());
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("haha Y?");
@@ -229,10 +229,10 @@ public class GameBoardView extends View {
     // if playerId is neither, draw nothing
     void drawPiece(Canvas canvas, float x, float y, int playerId) {
         if (playerId == FiveInARowGame.BLACK) {
-            BLACK_PNG.setBounds((int) x+1, (int) y+1, (int) (x + tileSize) - 1, (int) (y + tileSize) - 1);
+            BLACK_PNG.setBounds((int) x + 3, (int) y + 3, (int) (x + tileSize) - 3, (int) (y + tileSize) - 3);
             BLACK_PNG.draw(canvas);
         } else if (playerId == FiveInARowGame.WHITE) {
-            WHITE_PNG.setBounds((int) x+1, (int) y+1, (int) (x + tileSize) - 1, (int) (y + tileSize) - 1);
+            WHITE_PNG.setBounds((int) x + 3, (int) y + 3, (int) (x + tileSize) - 3, (int) (y + tileSize) - 3);
             WHITE_PNG.draw(canvas);
         }
     }

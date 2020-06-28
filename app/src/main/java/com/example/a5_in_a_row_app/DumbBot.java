@@ -2,13 +2,14 @@ package com.example.a5_in_a_row_app;
 
 import android.graphics.Point;
 
-import androidx.annotation.NonNull;
-
+import java.io.File;
 import java.util.Random;
+import java.util.Scanner;
 
 public class DumbBot extends Bot {
-    int myId;
+    String nextSpil = "your turn";
     Random R = new Random();
+
 
     DumbBot(int id) {
         super(id);
@@ -25,11 +26,20 @@ public class DumbBot extends Bot {
         return "your turn";
     }
 
-    void loadTrainedModelFromString(String s) {
-
+    @Override
+    String whatIsUrFileName() {
+        return "i.am.not.dumb";
     }
 
-    @NonNull
+    void loadTrainedModelFromFile(File f) {
+        try {
+            Scanner s = new Scanner(f);
+            while (s.hasNextLine()) System.out.println("Reading: " + s.nextLine());
+        } catch (Exception e) {
+            nextSpil = "wtf, gimme my file";
+        }
+    }
+
     @Override
     public String toString() {
         return super.toString();
