@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
@@ -40,13 +41,19 @@ public class GameBoardView extends View {
     // the current location of selection on the board
     Pair<Integer, Integer> location;
     List<GameCompletedListener> gameCompletedListeners;
+    // highlight the last played location
+    Pair<Integer, Integer> lastMove;
+    int lastMoveTimer;
+    //bot
+    Bot bot;
+    boolean botThinking;
     /**
      * class which defines a listener to be called when the game is over(someone wins)
      */
     public interface GameCompletedListener {
         void onGameCompleted(int gameState);
     }
-    public GameBoardView(Context context, FiveInARowGame game, StackHistory history) {
+    public GameBoardView(Context context, FiveInARowGame game, StackHistory history, Bot bot) {
 
         super(context);
         setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -54,6 +61,8 @@ public class GameBoardView extends View {
         this.game = game;
         this.history = history;
         gameCompletedListeners = new ArrayList<>();
+        // bot is white
+        this.bot = bot;
         brush = new Paint();
         brush.setStrokeWidth(3);
         brush.setColor(Color.DKGRAY);
@@ -75,6 +84,8 @@ public class GameBoardView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         //get location of the current selection on the board
         Pair<Integer, Integer> current = essentialGeometry(new PointF(event.getX(), event.getY()));
+        // skip if it is bot's move
+        if (game.nextPlayer() == bot.MY_ID) return true;
         switch(state) {
             case START:
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -108,16 +119,49 @@ public class GameBoardView extends View {
             location = p;
         }
     }
+
     void registerMove(float xPos, float yPos) {
         int x = (int) ((xPos - ((getWidth() - size) / 2f)) / tileSize);
         int y = (int) (yPos / tileSize);
         if (x < numTileOneSide && y < numTileOneSide) {
             if (game.makeMove(x, y, game.nextPlayer()).equals("good")) {
                 history.addAction(Pair.create(x, y));
+                botThinking = true;
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    while (!registerMove(bot.makeMove(game.getBoard()))) {
+                        // what?
+                    }
+                    botThinking = false;
+                    postInvalidate();
+                }).start();
             }
             if(game.getGameState() != 0) {
                 invokeGameCompletedListeners(game.getGameState());
             }
+        }
+    }
+
+    // the bot calls this to make a move
+    boolean registerMove(Point p) {
+        if (p.x < numTileOneSide && p.y < numTileOneSide) {
+            if (game.makeMove(p.x, p.y, game.nextPlayer()).equals("good")) {
+                history.addAction(Pair.create(p.x, p.y));
+                lastMove = new Pair<>(p.x, p.y);
+                lastMoveTimer = 150;
+            } else {
+                return false;
+            }
+            if(game.getGameState() != 0) {
+                invokeGameCompletedListeners(game.getGameState());
+            }
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -140,12 +184,12 @@ public class GameBoardView extends View {
         brush.setShader(gradient);
         if (game.nextPlayer() == FiveInARowGame.BLACK && delta < 1000) {
             postInvalidate();
-            delta += 80;
+            delta += 100;
             gradient = new LinearGradient(0 + delta, 0 + delta, 400 + delta, 400 + delta,
                     Color.BLACK, Color.WHITE, Shader.TileMode.CLAMP);
         } else if (game.nextPlayer() == FiveInARowGame.WHITE && delta > -200) {
             postInvalidate();
-            delta -= 80;
+            delta -= 100;
             gradient = new LinearGradient(0 + delta, 0 + delta, 400 + delta, 400 + delta,
                     Color.BLACK, Color.WHITE, Shader.TileMode.CLAMP);
         }
@@ -166,7 +210,18 @@ public class GameBoardView extends View {
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("haha Y?");
-            // the if check some how throw this
+            // the if check somehow throw this
+        }
+        // animate last move by bot
+        if (lastMove != null && lastMoveTimer > 0) {
+            float x = lastMove.first * tileSize;
+            float y = lastMove.second * tileSize;
+            brush.setColor(Color.BLACK);
+            brush.setStyle(Paint.Style.FILL);
+            brush.setAlpha((Math.min(lastMoveTimer, 255)));
+            canvas.drawRect(x, y, x + tileSize, y + tileSize, brush);
+            lastMoveTimer--;
+            postInvalidate();
         }
     }
 

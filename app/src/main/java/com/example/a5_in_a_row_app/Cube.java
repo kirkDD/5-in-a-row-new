@@ -145,15 +145,15 @@ public class Cube {
         target_angle[1] = y;
         target_angle[2] = z;
         if (evolveCurrentAngle()) {
-            System.out.println("updating x to " + x);
+//            System.out.println("updating x to " + x);
             postSetAngle();
             postInvalidate.run();
         }
     }
 
     boolean evolveCurrentAngle() {
-        System.out.println("angles to " + target_angle[0] + ", " + target_angle[1]
-        + ", " + target_angle[2]);
+//        System.out.println("angles to " + target_angle[0] + ", " + target_angle[1]
+//        + ", " + target_angle[2]);
         // - PI and PI are connected
         // - PI and PI are connected
         // - PI/2 and PI/2 are connected

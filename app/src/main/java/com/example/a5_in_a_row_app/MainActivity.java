@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity{
     GameBoardView boardView;
     FiveInARowGame game;
     StackHistory history;
+    Bot human;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,8 +75,11 @@ public class MainActivity extends AppCompatActivity{
     }
 
     void setUpBoardView() {
+        // construct bot
+        human = new DumbBot(FiveInARowGame.WHITE);
+
         game = new FiveInARowGame(15);
-        boardView = new GameBoardView(this, game, history);
+        boardView = new GameBoardView(this, game, history, human);
         LinearLayout ll = findViewById(R.id.game_board_area);
         ll.addView(boardView);
     }
