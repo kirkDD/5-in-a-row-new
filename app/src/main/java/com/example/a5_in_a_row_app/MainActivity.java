@@ -82,7 +82,8 @@ public class MainActivity extends AppCompatActivity{
 
     void setUpBoardView() {
         // construct bot
-        human = new DumbBot(FiveInARowGame.WHITE);
+//        human = new DumbBot(FiveInARowGame.WHITE);
+        human = new NotAI(FiveInARowGame.WHITE);
         File f = new File(getExternalFilesDir(BOT_STORAGE), human.whatIsUrFileName());
         if (f.exists()) human.loadTrainedModelFromFile(f);
         // game board and its view

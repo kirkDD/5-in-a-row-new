@@ -126,19 +126,21 @@ public class GameBoardView extends View {
         if (x < numTileOneSide && y < numTileOneSide) {
             if (game.makeMove(x, y, game.nextPlayer()).equals("good")) {
                 history.addAction(Pair.create(x, y));
-                botThinking = true;
-                new Thread(() -> {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    while (!registerMove(bot.makeMove(game.getBoard()))) {
-                        System.out.println("bot is crazy");
-                    }
-                    botThinking = false;
-                    postInvalidate();
-                }).start();
+                if (game.getGameState() == 0) {
+                    botThinking = true;
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        while (!registerMove(bot.makeMove(game.getBoard()))) {
+                            System.out.println("bot is crazy");
+                        }
+                        botThinking = false;
+                        postInvalidate();
+                    }).start();
+                }
             }
             if(game.getGameState() != 0) {
                 invokeGameCompletedListeners(game.getGameState());
@@ -222,6 +224,7 @@ public class GameBoardView extends View {
             canvas.drawRect(x, y, x + tileSize, y + tileSize, brush);
             lastMoveTimer--;
             postInvalidate();
+            brush.setAlpha(255);
         }
     }
 
