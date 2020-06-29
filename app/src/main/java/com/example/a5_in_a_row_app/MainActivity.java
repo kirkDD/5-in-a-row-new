@@ -103,27 +103,30 @@ public class MainActivity extends AppCompatActivity{
      * @param gameState : who wins : 1 -> black wins, -1 -> white wins, 2 -> draw
      */
     void onGameCompleted(int gameState) {
-        setContentView(R.layout.activity_main);
+        runOnUiThread(() -> {
+            setContentView(R.layout.activity_main);
 
-        if (gameState == 1) {
-            ConstraintLayout finishedScreen = findViewById(R.id.win_screen);
-            TextView finishedText = findViewById(R.id.instructionTextViewWin);
-            finishedText.setText("congratulations black wins");
-            finishedScreen.setVisibility(View.VISIBLE);
-            findViewById(R.id.play_again).setOnClickListener((v) -> reset());
-            findViewById(R.id.return_home_win).setOnClickListener((v) -> quit());
-        } else {
-            ConstraintLayout finishedScreen = findViewById(R.id.loss_screen);
-            TextView finishedText = findViewById(R.id.instructionTextViewLoss);
-            finishedText.setText("congratulations white wins");
-            finishedScreen.setVisibility(View.VISIBLE);
-            findViewById(R.id.try_again).setOnClickListener((v) -> reset());
-            findViewById(R.id.return_home_loss).setOnClickListener((v) -> quit());
-        }
-        findViewById(R.id.undo_button).setVisibility(View.INVISIBLE);
-        findViewById(R.id.redo_button).setVisibility(View.INVISIBLE);
-        findViewById(R.id.undo_button_text).setVisibility(View.INVISIBLE);
-        findViewById(R.id.redo_button_text).setVisibility(View.INVISIBLE);
+            if (gameState == 1) {
+                ConstraintLayout finishedScreen = findViewById(R.id.win_screen);
+                TextView finishedText = findViewById(R.id.instructionTextViewWin);
+                finishedText.setText("congratulations black wins");
+                finishedScreen.setVisibility(View.VISIBLE);
+                findViewById(R.id.play_again).setOnClickListener((v) -> reset());
+                findViewById(R.id.return_home_win).setOnClickListener((v) -> quit());
+            } else {
+                ConstraintLayout finishedScreen = findViewById(R.id.loss_screen);
+                TextView finishedText = findViewById(R.id.instructionTextViewLoss);
+                finishedText.setText("congratulations white wins");
+                finishedScreen.setVisibility(View.VISIBLE);
+                findViewById(R.id.try_again).setOnClickListener((v) -> reset());
+                findViewById(R.id.return_home_loss).setOnClickListener((v) -> quit());
+            }
+            findViewById(R.id.undo_button).setVisibility(View.INVISIBLE);
+            findViewById(R.id.redo_button).setVisibility(View.INVISIBLE);
+            findViewById(R.id.undo_button_text).setVisibility(View.INVISIBLE);
+            findViewById(R.id.redo_button_text).setVisibility(View.INVISIBLE);
+        });
+
     }
 
     /**

@@ -130,7 +130,7 @@ public class FiveInARowGame {
             board[x][y] = player;
             turn = -turn;
             boardAsList.get(player).add(new int[]{x, y});
-            System.out.println("move played");
+//            System.out.println("move played");
             this.updateGameState();
             return "good";
         }

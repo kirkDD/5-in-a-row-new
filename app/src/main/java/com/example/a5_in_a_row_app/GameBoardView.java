@@ -129,11 +129,13 @@ public class GameBoardView extends View {
                 if (game.getGameState() == 0) {
                     botThinking = true;
                     new Thread(() -> {
+
                         try {
-                            Thread.sleep(1000);
+                            Thread.sleep(200);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
+
                         while (!registerMove(bot.makeMove(game.getBoard()))) {
                             System.out.println("bot is crazy");
                         }
